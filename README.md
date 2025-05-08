@@ -1,2 +1,2 @@
-# Calendario-RCBB-Almafuerte
-Calendario para las actividades de RC Bahia Blanca Almafuerte, internas y externas
+# Calendario-RotaryBB-Almafuerte
+Calendario de las actividades de RC Bahia Blanca Almafuerte, tanto internas como externas

@@ -1,0 +1,56 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  header {
+    text-align: center;
+    padding: 1rem;
+    background-color: #f0f0f0;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background-color: #ccc;
+  }
+  
+  .day {
+    background-color: #fff;
+    min-height: 100px;
+    padding: 5px;
+    font-size: 0.85rem;
+    vertical-align: top;
+    border: 1px solid #ccc;
+  }
+  
+  .day .date {
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  .event {
+    margin-top: 4px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+  
+  .Cumpleaños { background-color: #cce5ff; }
+  .Cena { background-color: #d4edda; }
+  .Feriado { background-color: #f8d7da; }
+  .TeBingo { background-color: #e2d4f0; }
+  .CataDeVinos { background-color: #ffe8cc; }
+  .Reunion { background-color: #d9edf7; }
+  
+  footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.75rem;
+    background-color: #f0f0f0;
+  }
+  
