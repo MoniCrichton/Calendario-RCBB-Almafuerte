@@ -10,10 +10,10 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
         rawDate: row.Fecha || '',
-        title: row.Título?.trim() || 'Sin título',
+        title: (row.Título || '').trim() || 'Sin título',
         time: row['Hora Inicio'] || '',
-        type: row.Tipo?.trim() || 'Otro',
-        repeat: row.Repetir?.trim().toLowerCase() || '',
+        type: (row.Tipo || 'Otro').trim(),
+        repeat: (row.Repetir || '').trim().toLowerCase(),
         error: !esFechaValida
       };
     });
@@ -35,7 +35,7 @@ function generateCalendar(year, month) {
   }
 
   for (let day = 1; day <= totalDays; day++) {
-    const dateObj = new Date(year, month, day);
+    const dateObj = new Date(Date.UTC(year, month, day));
     const cellDate = dateObj.toISOString().split('T')[0];
     const dayCell = document.createElement('div');
     dayCell.classList.add('day');
@@ -47,13 +47,10 @@ function generateCalendar(year, month) {
 
     const dayEvents = events.filter(e => {
       if (e.error) return false;
-      const eventDate = new Date(e.date);
+      const eventDate = new Date(e.date + 'T00:00:00Z');
 
       if (e.repeat === 'semanal') {
-        return (
-          eventDate.getUTCDay() === dateObj.getUTCDay() &&
-          dateObj >= eventDate
-        );
+        return eventDate.getUTCDay() === dateObj.getUTCDay() && dateObj >= eventDate;
       }
       if (e.repeat === 'anual') {
         return (
@@ -76,7 +73,9 @@ function generateCalendar(year, month) {
     dayEvents.forEach(event => {
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
+      eventEl.classList.add(event.type);
 
+      // Asignar colores únicos por tipo
       const tipo = event.type.toLowerCase();
       const colores = {
         'cumpleaños': '#d1e7ff',
@@ -92,7 +91,7 @@ function generateCalendar(year, month) {
         eventEl.textContent = `🎂 ${event.title}`;
       } else if (tipo === 'aniversario') {
         const yearStart = new Date(event.rawDate).getFullYear();
-        const currentYear = dateObj.getFullYear();
+        const currentYear = dateObj.getUTCFullYear();
         const years = currentYear - yearStart;
         eventEl.textContent = `${event.title} (${years} años)`;
         eventEl.style.fontWeight = 'bold';
