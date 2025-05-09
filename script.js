@@ -10,10 +10,10 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
         rawDate: row.Fecha || '',
-        title: row.Título || 'Sin título',
+        title: row.Título?.trim() || 'Sin título',
         time: row['Hora Inicio'] || '',
-        type: row.Tipo || 'Otro',
-        repeat: row.Repetir || '',
+        type: row.Tipo?.trim() || 'Otro',
+        repeat: row.Repetir?.trim().toLowerCase() || '',
         error: !esFechaValida
       };
     });
@@ -50,12 +50,15 @@ function generateCalendar(year, month) {
       const eventDate = new Date(e.date);
 
       if (e.repeat === 'semanal') {
-        return eventDate.getDay() === dateObj.getDay() && dateObj >= eventDate;
+        return (
+          eventDate.getUTCDay() === dateObj.getUTCDay() &&
+          dateObj >= eventDate
+        );
       }
       if (e.repeat === 'anual') {
         return (
-          eventDate.getDate() === dateObj.getDate() &&
-          eventDate.getMonth() === dateObj.getMonth()
+          eventDate.getUTCDate() === dateObj.getUTCDate() &&
+          eventDate.getUTCMonth() === dateObj.getUTCMonth()
         );
       }
       return e.date === cellDate;
@@ -73,9 +76,7 @@ function generateCalendar(year, month) {
     dayEvents.forEach(event => {
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
-      eventEl.classList.add(event.type);
 
-      // Asignar colores únicos por tipo
       const tipo = event.type.toLowerCase();
       const colores = {
         'cumpleaños': '#d1e7ff',
