@@ -10,7 +10,7 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
         rawDate: row.Fecha || '',
-        title: (row.Título || '').trim() || 'Sin título',
+        title: (row.Titulo || '').trim() || 'Sin título',
         time: row['Hora Inicio'] || '',
         type: (row.Tipo || 'Otro').trim().toLowerCase(),
         repeat: (row.Repetir || '').trim().toLowerCase(),
