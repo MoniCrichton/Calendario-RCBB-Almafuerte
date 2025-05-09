@@ -1,6 +1,6 @@
 let events = [];
 
-fetch("https://opensheet.vercel.app/1IPzWW-3MzGUbzIx-vRJO4mL0iMgnOpnBo-wQGlfPUz8/Hoja%201")
+fetch("https://opensheet.vercel.app/1IPzWW3MzGUbzIxvRJO4mL0iMgnOpnBowQGlfPUz8/Hoja%201")
   .then(response => response.json())
   .then(data => {
     events = data.map((row) => {
