@@ -3,6 +3,7 @@ let events = [];
 fetch("https://opensheet.vercel.app/1IPzWW3MzGUbzIxvRJO4mL0iMgnOpnBowQGlfPUz8/Eventos")
   .then(response => response.json())
   .then(data => {
+    console.log("Datos recibidos:", data);  // 👈 esto
     if (!Array.isArray(data)) {
       console.error("La respuesta no es una lista:", data);
       return;
