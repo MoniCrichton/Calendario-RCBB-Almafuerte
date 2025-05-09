@@ -1,6 +1,6 @@
 let events = [];
 
-fetch("https://opensheet.vercel.app/1IPzWW3MzGUbzIxvRJO4mL0iMgnOpnBowQGlfPUz8/Eventos")
+fetch("https://opensheet.vercel.app/1IPzWW-3MzGUbzIx-vRJO4mL0iMgnOpnBo-wQGlfPUz8/Eventos")
   .then(response => response.json())
   .then(data => {
     console.log("Datos recibidos:", data);  // 👈 esto
