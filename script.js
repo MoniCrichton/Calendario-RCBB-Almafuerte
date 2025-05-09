@@ -4,26 +4,25 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
   .then(response => response.json())
   .then(data => {
     events = data.map(row => {
-      const fecha = row.Fecha ? row.Fecha.split('T')[0] : null;
-      const validDate = /^\d{4}-\d{2}-\d{2}$/.test(fecha);
+      const fecha = new Date(row.Fecha);
+      const esFechaValida = !isNaN(fecha);
 
       return {
-        date: validDate ? fecha : null,
-        title: row.Titulo || 'Sin título',
-        time: row["Hora Inicio"] || '',
+        date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
+        rawDate: row.Fecha || '',
+        title: row.Título || 'Sin título',
+        time: row['Hora Inicio'] || '',
         type: row.Tipo || 'Otro',
         repeat: row.Repetir || '',
-        error: !validDate
+        error: !esFechaValida
       };
     });
-
-    generateCalendar(2025, 4); // mayo (mes 4 porque empieza en 0)
+    generateCalendar(2025, 4); // Mayo 2025
   });
 
 function generateCalendar(year, month) {
   const calendar = document.getElementById('calendar');
   calendar.innerHTML = '';
-
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const startDay = (firstDay.getDay() + 6) % 7; // lunes como primer día
@@ -48,33 +47,61 @@ function generateCalendar(year, month) {
 
     const dayEvents = events.filter(e => {
       if (e.error) return false;
+      const eventDate = new Date(e.date);
+
       if (e.repeat === 'semanal') {
-        const eventDate = new Date(e.date);
-        return eventDate.getDay() === dateObj.getDay() &&
-               dateObj >= eventDate &&
-               !(month === 11 && day > 15); // evitar después del 15 de diciembre
+        return eventDate.getDay() === dateObj.getDay() && dateObj >= eventDate;
+      }
+      if (e.repeat === 'anual') {
+        return (
+          eventDate.getDate() === dateObj.getDate() &&
+          eventDate.getMonth() === dateObj.getMonth()
+        );
       }
       return e.date === cellDate;
+    });
+
+    const errorEvents = events.filter(e => e.error && e.title);
+    errorEvents.forEach(event => {
+      const errorEl = document.createElement('div');
+      errorEl.classList.add('event');
+      errorEl.style.backgroundColor = '#ffcccc';
+      errorEl.textContent = `⚠ ${event.title}: fecha inválida`;
+      calendar.appendChild(errorEl);
     });
 
     dayEvents.forEach(event => {
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
       eventEl.classList.add(event.type);
-      eventEl.textContent = (event.time ? event.time + ' ' : '') + event.title;
+
+      // Asignar colores únicos por tipo
+      const tipo = event.type.toLowerCase();
+      const colores = {
+        'cumpleaños': '#d1e7ff',
+        'reunión': '#d4edda',
+        'cena': '#ffeeba',
+        'aniversario': '#ffe9a9',
+        'feriado': '#f8d7da',
+        'otro': '#e2e3e5'
+      };
+      eventEl.style.backgroundColor = colores[tipo] || '#e2e3e5';
+
+      if (tipo === 'cumpleaños') {
+        eventEl.textContent = `🎂 ${event.title}`;
+      } else if (tipo === 'aniversario') {
+        const yearStart = new Date(event.rawDate).getFullYear();
+        const currentYear = dateObj.getFullYear();
+        const years = currentYear - yearStart;
+        eventEl.textContent = `${event.title} (${years} años)`;
+        eventEl.style.fontWeight = 'bold';
+      } else {
+        eventEl.textContent = (event.time ? event.time + ' ' : '') + event.title;
+      }
+
       dayCell.appendChild(eventEl);
     });
 
     calendar.appendChild(dayCell);
   }
-
-  // Mostrar advertencias por fechas inválidas
-  const errorEvents = events.filter(e => e.error && e.title);
-  errorEvents.forEach(event => {
-    const errorEl = document.createElement('div');
-    errorEl.classList.add('event');
-    errorEl.style.backgroundColor = '#ffcccc';
-    errorEl.textContent = `⚠ ${event.title}: fecha inválida`;
-    calendar.appendChild(errorEl);
-  });
 }
