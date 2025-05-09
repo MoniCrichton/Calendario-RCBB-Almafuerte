@@ -76,7 +76,7 @@ function generateCalendar(year, month) {
     calendar.appendChild(errorEl);
   });
 }
-let events = [];
+
 
 fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
   .then(response => response.json())
