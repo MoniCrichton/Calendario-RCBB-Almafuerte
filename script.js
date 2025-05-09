@@ -12,7 +12,7 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         rawDate: row.Fecha || '',
         title: (row.Título || '').trim() || 'Sin título',
         time: row['Hora Inicio'] || '',
-        type: (row.Tipo || 'Otro').trim(),
+        type: (row.Tipo || 'Otro').trim().toLowerCase(),
         repeat: (row.Repetir || '').trim().toLowerCase(),
         error: !esFechaValida
       };
@@ -61,21 +61,10 @@ function generateCalendar(year, month) {
       return e.date === cellDate;
     });
 
-    const errorEvents = events.filter(e => e.error && e.title);
-    errorEvents.forEach(event => {
-      const errorEl = document.createElement('div');
-      errorEl.classList.add('event');
-      errorEl.style.backgroundColor = '#ffcccc';
-      errorEl.textContent = `⚠ ${event.title}: fecha inválida`;
-      calendar.appendChild(errorEl);
-    });
-
     dayEvents.forEach(event => {
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
-      eventEl.classList.add(event.type);
 
-      // Asignar colores únicos por tipo
       const tipo = event.type.toLowerCase();
       const colores = {
         'cumpleaños': '#d1e7ff',
@@ -104,4 +93,13 @@ function generateCalendar(year, month) {
 
     calendar.appendChild(dayCell);
   }
+
+  const errorEvents = events.filter(e => e.error && e.title);
+  errorEvents.forEach(event => {
+    const errorEl = document.createElement('div');
+    errorEl.classList.add('event');
+    errorEl.style.backgroundColor = '#ffcccc';
+    errorEl.textContent = `⚠ ${event.title}: fecha inválida`;
+    calendar.appendChild(errorEl);
+  });
 }
