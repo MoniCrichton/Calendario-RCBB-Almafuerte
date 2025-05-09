@@ -3,6 +3,11 @@ let events = [];
 fetch("https://opensheet.vercel.app/1IPzWW3MzGUbzIxvRJO4mL0iMgnOpnBowQGlfPUz8/Eventos")
   .then(response => response.json())
   .then(data => {
+    if (!Array.isArray(data)) {
+      console.error("La respuesta no es una lista:", data);
+      return;
+    }
+
     events = data.map((row) => {
       const validDate = /^\d{4}-\d{2}-\d{2}$/.test(row.Fecha);
       return {
@@ -14,7 +19,11 @@ fetch("https://opensheet.vercel.app/1IPzWW3MzGUbzIxvRJO4mL0iMgnOpnBowQGlfPUz8/Ev
         error: !validDate
       };
     });
-    generateCalendar(2025, 4); // mayo 2025
+
+    generateCalendar(2025, 4); // mayo 2025 (mes 4 porque enero=0)
+  })
+  .catch(error => {
+    console.error("Error al cargar los datos:", error);
   });
 
 function generateCalendar(year, month) {
@@ -36,6 +45,7 @@ function generateCalendar(year, month) {
     const cellDate = dateObj.toISOString().split('T')[0];
     const dayCell = document.createElement('div');
     dayCell.classList.add('day');
+
     const dateLabel = document.createElement('div');
     dateLabel.classList.add('date');
     dateLabel.textContent = day;
@@ -43,32 +53,37 @@ function generateCalendar(year, month) {
 
     const dayEvents = events.filter(e => {
       if (e.error) return false;
-      if (e.repeat === 'semanal') {
-        const eventDate = new Date(e.date);
-        return eventDate.getDay() === dateObj.getDay() &&
-               dateObj >= eventDate &&
-               !(month === 11 && day > 15);
+
+      // Repeticiones semanales
+      if (e.repeat.toLowerCase() === 'semanal') {
+        const original = new Date(e.date);
+        return dateObj.getDay() === original.getDay() &&
+               dateObj >= original &&
+               !(month === 11 && day > 15); // pausa en diciembre
       }
+
+      // Evento puntual
       return e.date === cellDate;
     });
 
-    const errorEvents = events.filter(e => e.error && e.title);
-    errorEvents.forEach(event => {
-      const errorEl = document.createElement('div');
-      errorEl.classList.add('event');
-      errorEl.style.backgroundColor = '#ffcccc';
-      errorEl.textContent = `⚠ ${event.title}: fecha inválida`;
-      calendar.appendChild(errorEl);
-    });
-
     dayEvents.forEach(event => {
-      const eventEl = document.createElement('div');
-      eventEl.classList.add('event');
-      eventEl.classList.add(event.type);
-      eventEl.textContent = (event.time ? event.time + ' ' : '') + event.title;
-      dayCell.appendChild(eventEl);
+      const el = document.createElement('div');
+      el.classList.add('event');
+      el.classList.add(event.type); // para aplicar color
+      el.textContent = (event.time ? event.time + ' ' : '') + event.title;
+      dayCell.appendChild(el);
     });
 
     calendar.appendChild(dayCell);
   }
+
+  // Mostrar advertencias por errores
+  const errorEvents = events.filter(e => e.error && e.title);
+  errorEvents.forEach(event => {
+    const errorEl = document.createElement('div');
+    errorEl.classList.add('event');
+    errorEl.style.backgroundColor = '#ffcccc';
+    errorEl.textContent = `⚠ ${event.title}: fecha inválida`;
+    calendar.appendChild(errorEl);
+  });
 }
