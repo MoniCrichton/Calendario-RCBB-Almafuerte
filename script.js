@@ -55,14 +55,43 @@ function generateCalendar(year, month) {
   const startDay = (firstDay.getDay() + 6) % 7;
   const totalDays = lastDay.getDate();
 
-  const mesActual = document.getElementById('mes-actual');
-  const consignaDiv = document.getElementById('consigna-mensual');
+  const header = document.getElementById('month-header');
+  header.innerHTML = '';
 
-  if (mesActual && consignaDiv) {
-    mesActual.textContent = firstDay.toLocaleString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
-    const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
-    consignaDiv.textContent = consigna ? consigna.texto : '';
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = '←';
+  prevBtn.onclick = () => cambiarMes(-1);
+  prevBtn.style.float = 'left';
+  prevBtn.style.fontSize = '1.2rem';
+  prevBtn.style.margin = '0 1rem';
+
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = '→';
+  nextBtn.onclick = () => cambiarMes(1);
+  nextBtn.style.float = 'right';
+  nextBtn.style.fontSize = '1.2rem';
+  nextBtn.style.margin = '0 1rem';
+
+  const mesActual = document.createElement('span');
+  mesActual.id = 'mes-actual';
+  mesActual.textContent = firstDay.toLocaleString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+  mesActual.style.fontWeight = 'bold';
+
+  header.appendChild(prevBtn);
+  header.appendChild(mesActual);
+  header.appendChild(nextBtn);
+
+  const consignaDiv = document.getElementById('consigna-mensual') || document.createElement('div');
+  consignaDiv.id = 'consigna-mensual';
+  consignaDiv.style.textAlign = 'center';
+  consignaDiv.style.fontSize = '1rem';
+  consignaDiv.style.marginBottom = '1rem';
+  if (!document.getElementById('consigna-mensual')) {
+    header.appendChild(consignaDiv);
   }
+
+  const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
+  consignaDiv.textContent = consigna ? consigna.texto : '';
 
   let hayEventos = false;
 
