@@ -58,7 +58,7 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
         rawDate: row.Fecha || '',
-        title: (row.Nombre || '').trim() || 'Sin título',
+        title: row.Nombre && row.Nombre.trim() ? row.Nombre.trim() : 'Sin título',
         time: '',
         type: 'cumpleaños',
         repeat: 'anual',
