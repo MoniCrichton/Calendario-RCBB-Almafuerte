@@ -10,8 +10,8 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
         rawDate: row.Fecha || '',
-        title: (row.Título || '').trim() || 'Sin título',
-        time: row['Hora Inicio'] || '',
+        title: (row.Titulo || '').trim() || 'Sin título',
+        time: row['Hora Inicio'] ? row['Hora Inicio'].trim() : '',
         type: (row.Tipo || 'Otro').trim().toLowerCase(),
         repeat: (row.Repetir || '').trim().toLowerCase(),
         error: !esFechaValida
@@ -65,7 +65,7 @@ function generateCalendar(year, month) {
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
 
-      const tipo = event.type.toLowerCase();
+      const tipo = event.type;
       const colores = {
         'cumpleaños': '#d1e7ff',
         'reunión': '#d4edda',
@@ -85,7 +85,7 @@ function generateCalendar(year, month) {
         eventEl.textContent = `${event.title} (${years} años)`;
         eventEl.style.fontWeight = 'bold';
       } else {
-        eventEl.textContent = (event.time ? event.time + ' ' : '') + event.title;
+        eventEl.textContent = `${event.time ? event.time + ' ' : ''}${event.title}`;
       }
 
       dayCell.appendChild(eventEl);
