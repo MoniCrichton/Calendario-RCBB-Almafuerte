@@ -181,7 +181,10 @@ function generateCalendar(year, month) {
       eventEl.style.backgroundColor = colores[tipo] || '#e2e3e5';
 
       if (tipo === 'cumpleaños') {
-        eventEl.textContent = `🎂 ${event.title}${typeof event.edad === 'number' ? ` (${event.edad})` : ''}`;
+        eventEl.textContent = `🎂 ${event.title}`;
+        if (typeof event.edad === 'number') {
+          eventEl.textContent += ` (${event.edad} años)`;
+        }
       } else if (tipo === 'aniversario') {
         const yearStart = new Date(event.rawDate).getFullYear();
         const currentYear = dateObj.getUTCFullYear();
