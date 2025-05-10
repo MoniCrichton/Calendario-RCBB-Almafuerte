@@ -68,7 +68,7 @@ function generateCalendar(year, month) {
       consignaDiv.style.textAlign = 'center';
       consignaDiv.style.fontSize = '1rem';
       consignaDiv.style.marginBottom = '1rem';
-      mesActual.parentElement.appendChild(consignaDiv);
+      mesActual.insertAdjacentElement('afterend', consignaDiv);
     }
     consignaDiv.textContent = consigna ? consigna.texto : '';
   }
