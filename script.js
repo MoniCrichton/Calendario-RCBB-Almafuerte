@@ -55,21 +55,12 @@ function generateCalendar(year, month) {
   const startDay = (firstDay.getDay() + 6) % 7;
   const totalDays = lastDay.getDate();
 
-  // Encabezado del mes
   const mesActual = document.getElementById('mes-actual');
-  if (mesActual) {
-    mesActual.textContent = firstDay.toLocaleString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+  const consignaDiv = document.getElementById('consigna-mensual');
 
-    let consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
-    let consignaDiv = document.getElementById('consigna-mensual');
-    if (!consignaDiv) {
-      consignaDiv = document.createElement('div');
-      consignaDiv.id = 'consigna-mensual';
-      consignaDiv.style.textAlign = 'center';
-      consignaDiv.style.fontSize = '1rem';
-      consignaDiv.style.marginBottom = '1rem';
-      mesActual.insertAdjacentElement('afterend', consignaDiv);
-    }
+  if (mesActual && consignaDiv) {
+    mesActual.textContent = firstDay.toLocaleString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+    const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
     consignaDiv.textContent = consigna ? consigna.texto : '';
   }
 
