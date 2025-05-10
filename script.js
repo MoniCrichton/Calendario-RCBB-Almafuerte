@@ -8,6 +8,7 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
   .then(data => {
     events = data.map(row => {
       const fecha = new Date(row.Fecha);
+      const hasta = row.Hasta ? new Date(row.Hasta) : null;
       const esFechaValida = !isNaN(fecha);
 
       return {
@@ -17,6 +18,7 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         time: row['Hora Inicio'] ? row['Hora Inicio'].trim() : '',
         type: (row.Tipo || 'Otro').trim().toLowerCase(),
         repeat: (row.Repetir || '').trim().toLowerCase(),
+        hasta: hasta,
         error: !esFechaValida
       };
     });
@@ -115,15 +117,14 @@ function generateCalendar(year, month) {
     const dayEvents = events.filter(e => {
       if (e.error) return false;
       const eventDate = new Date(e.date + 'T00:00:00Z');
+      const hasta = e.hasta instanceof Date && !isNaN(e.hasta) ? e.hasta : null;
 
       if (e.repeat === 'semanal') {
-        return eventDate.getUTCDay() === dateObj.getUTCDay() && dateObj >= eventDate;
+        return eventDate.getUTCDay() === dateObj.getUTCDay() && dateObj >= eventDate && (!hasta || dateObj <= hasta);
       }
       if (e.repeat === 'anual') {
-        return (
-          eventDate.getUTCDate() === dateObj.getUTCDate() &&
-          eventDate.getUTCMonth() === dateObj.getUTCMonth()
-        );
+        const sameDayAndMonth = eventDate.getUTCDate() === dateObj.getUTCDate() && eventDate.getUTCMonth() === dateObj.getUTCMonth();
+        return sameDayAndMonth && (!hasta || dateObj <= hasta);
       }
       return e.date === cellDate;
     });
