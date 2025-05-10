@@ -28,8 +28,8 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
   .then(response => response.json())
   .then(data => {
     consignas = data.map(row => ({
-      anio: row.Año,
-      mes: row.Mes,
+      anio: parseInt(row.Año),
+      mes: parseInt(row.Mes),
       texto: row.Consigna
     }));
     verificarInicio();
@@ -58,10 +58,9 @@ function generateCalendar(year, month) {
   // Encabezado del mes
   const mesActual = document.getElementById('mes-actual');
   if (mesActual) {
-    const claveMes = `${year}-${String(month + 1).padStart(2, '0')}`;
     mesActual.textContent = firstDay.toLocaleString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
 
-    let consigna = consignas.find(c => parseInt(c.anio) === year && parseInt(c.mes) === (month + 1));
+    let consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
     let consignaDiv = document.getElementById('consigna-mensual');
     if (!consignaDiv) {
       consignaDiv = document.createElement('div');
