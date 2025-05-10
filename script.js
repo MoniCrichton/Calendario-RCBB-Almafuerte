@@ -1,4 +1,5 @@
 let events = [];
+let currentDate = new Date(2025, 4); // Mayo 2025
 
 fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
   .then(response => response.json())
@@ -17,16 +18,30 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         error: !esFechaValida
       };
     });
-    generateCalendar(2025, 4); // Mayo 2025
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
   });
+
+function cambiarMes(delta) {
+  currentDate.setMonth(currentDate.getMonth() + delta);
+  generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+}
 
 function generateCalendar(year, month) {
   const calendar = document.getElementById('calendar');
   calendar.innerHTML = '';
+
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const startDay = (firstDay.getDay() + 6) % 7; // lunes como primer día
   const totalDays = lastDay.getDate();
+
+  // Actualiza encabezado del mes
+  const mesActual = document.getElementById('mes-actual');
+  if (mesActual) {
+    mesActual.textContent = firstDay.toLocaleString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+  }
+
+  let hayEventos = false;
 
   for (let i = 0; i < startDay; i++) {
     const empty = document.createElement('div');
@@ -61,6 +76,8 @@ function generateCalendar(year, month) {
       return e.date === cellDate;
     });
 
+    if (dayEvents.length > 0) hayEventos = true;
+
     dayEvents.forEach(event => {
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
@@ -92,6 +109,15 @@ function generateCalendar(year, month) {
     });
 
     calendar.appendChild(dayCell);
+  }
+
+  if (!hayEventos) {
+    const aviso = document.createElement('div');
+    aviso.style.textAlign = 'center';
+    aviso.style.margin = '1rem';
+    aviso.style.color = '#999';
+    aviso.textContent = 'No hay eventos en este mes';
+    calendar.appendChild(aviso);
   }
 
   const errorEvents = events.filter(e => e.error && e.title);
