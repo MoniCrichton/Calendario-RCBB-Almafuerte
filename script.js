@@ -1,6 +1,8 @@
 let events = [];
+let consignas = [];
 let currentDate = new Date(2025, 4); // Mayo 2025
 
+// Cargar eventos
 fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
   .then(response => response.json())
   .then(data => {
@@ -18,8 +20,26 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         error: !esFechaValida
       };
     });
-    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+    verificarInicio();
   });
+
+// Cargar consignas mensuales desde la hoja "Consignas"
+fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
+  .then(response => response.json())
+  .then(data => {
+    consignas = data.map(row => ({
+      anio: row.Año,
+      mes: row.Mes,
+      texto: row.Consigna
+    }));
+    verificarInicio();
+  });
+
+function verificarInicio() {
+  if (events.length > 0 && consignas.length > 0) {
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+  }
+}
 
 function cambiarMes(delta) {
   currentDate.setMonth(currentDate.getMonth() + delta);
@@ -32,13 +52,26 @@ function generateCalendar(year, month) {
 
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-  const startDay = (firstDay.getDay() + 6) % 7; // lunes como primer día
+  const startDay = (firstDay.getDay() + 6) % 7;
   const totalDays = lastDay.getDate();
 
-  // Actualiza encabezado del mes
+  // Encabezado del mes
   const mesActual = document.getElementById('mes-actual');
   if (mesActual) {
+    const claveMes = `${year}-${String(month + 1).padStart(2, '0')}`;
     mesActual.textContent = firstDay.toLocaleString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+
+    let consigna = consignas.find(c => parseInt(c.anio) === year && parseInt(c.mes) === (month + 1));
+    let consignaDiv = document.getElementById('consigna-mensual');
+    if (!consignaDiv) {
+      consignaDiv = document.createElement('div');
+      consignaDiv.id = 'consigna-mensual';
+      consignaDiv.style.textAlign = 'center';
+      consignaDiv.style.fontSize = '1rem';
+      consignaDiv.style.marginBottom = '1rem';
+      mesActual.parentElement.appendChild(consignaDiv);
+    }
+    consignaDiv.textContent = consigna ? consigna.texto : '';
   }
 
   let hayEventos = false;
