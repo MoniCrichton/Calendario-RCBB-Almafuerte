@@ -181,6 +181,7 @@ function generateCalendar(year, month) {
       eventEl.style.backgroundColor = colores[tipo] || '#e2e3e5';
 
       if (tipo === 'cumpleaños') {
+        console.log('🎂 Cumpleaños renderizado:', event);
         eventEl.textContent = `🎂 ${event.title}`;
         if (typeof event.edad === 'number') {
           eventEl.textContent += ` (${event.edad} años)`;
