@@ -14,10 +14,10 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
 
       let edad = null;
       if (esFechaValida && mostrarEdad) {
-        const hoy = new Date();
-        edad = hoy.getFullYear() - fecha.getFullYear();
-        const cumpleEsteAño = new Date(hoy.getFullYear(), fecha.getMonth(), fecha.getDate());
-        if (cumpleEsteAño > hoy) edad--;
+        const currentYear = currentDate.getFullYear();
+        const cumpleEsteAño = new Date(currentYear, fecha.getMonth(), fecha.getDate());
+        edad = currentYear - fecha.getFullYear();
+        if (cumpleEsteAño < new Date(currentDate)) edad--;
       }
 
       return {
