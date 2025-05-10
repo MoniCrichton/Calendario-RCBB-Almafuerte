@@ -3,42 +3,7 @@ let consignas = [];
 let cumpleaños = [];
 let currentDate = new Date(2025, 4); // Mayo 2025
 
-// Cargar eventos generales
-fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
-  .then(response => response.json())
-  .then(data => {
-    events = data.map(row => {
-      const fecha = new Date(row.Fecha);
-      const hasta = row.Hasta ? new Date(row.Hasta) : null;
-      const esFechaValida = !isNaN(fecha);
-
-      return {
-        date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
-        rawDate: row.Fecha || '',
-        title: (row.Titulo || '').trim() || 'Sin título',
-        time: row['Hora Inicio'] ? row['Hora Inicio'].trim() : '',
-        type: (row.Tipo || 'Otro').trim().toLowerCase(),
-        repeat: (row.Repetir || '').trim().toLowerCase(),
-        hasta: hasta,
-        error: !esFechaValida
-      };
-    });
-    verificarInicio();
-  });
-
-// Cargar consignas mensuales
-fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
-  .then(response => response.json())
-  .then(data => {
-    consignas = data.map(row => ({
-      anio: parseInt(row.Año),
-      mes: parseInt(row.Mes),
-      texto: row.Consigna
-    }));
-    verificarInicio();
-  });
-
-// Cargar cumpleaños desde hoja separada
+// Cargar cumpleaños primero para evitar ser sobreescritos
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Cumpleaños")
   .then(response => response.json())
   .then(data => {
@@ -67,15 +32,45 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         edad: mostrarEdad ? edad : null
       };
     });
-    // Filtrar duplicados antes de combinar
-    const eventosUnicos = cumpleañosMapeados.filter(cumple => {
-      return !events.some(ev =>
-        ev.date === cumple.date &&
-        ev.title.toLowerCase() === cumple.title.toLowerCase() &&
-        ev.type === 'cumpleaños'
-      );
+    cumpleaños = cumpleañosMapeados;
+    verificarInicio();
+  });
+
+// Cargar eventos generales
+fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
+  .then(response => response.json())
+  .then(data => {
+    const otrosEventos = data.map(row => {
+      const fecha = new Date(row.Fecha);
+      const hasta = row.Hasta ? new Date(row.Hasta) : null;
+      const esFechaValida = !isNaN(fecha);
+
+      return {
+        date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
+        rawDate: row.Fecha || '',
+        title: (row.Titulo || '').trim() || 'Sin título',
+        time: row['Hora Inicio'] ? row['Hora Inicio'].trim() : '',
+        type: (row.Tipo || 'Otro').trim().toLowerCase(),
+        repeat: (row.Repetir || '').trim().toLowerCase(),
+        hasta: hasta,
+        error: !esFechaValida
+      };
     });
-    events = events.concat(eventosUnicos);
+
+    // Unir eventos sin sobrescribir los cumpleaños
+    events = [...otrosEventos, ...cumpleaños];
+    verificarInicio();
+  });
+
+// Cargar consignas mensuales
+fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
+  .then(response => response.json())
+  .then(data => {
+    consignas = data.map(row => ({
+      anio: parseInt(row.Año),
+      mes: parseInt(row.Mes),
+      texto: row.Consigna
+    }));
     verificarInicio();
   });
 
@@ -156,33 +151,29 @@ function generateCalendar(year, month) {
     dateLabel.textContent = day;
     dayCell.appendChild(dateLabel);
 
-    const dayEventsRaw = events.filter(e => {
-    if (e.error) return false;
-    const eventDate = new Date(e.date + 'T00:00:00Z');
-    const hasta = e.hasta instanceof Date && !isNaN(e.hasta) ? e.hasta : null;
+    const dayEvents = events.filter(e => {
+      if (e.error) return false;
+      const eventDate = new Date(e.date + 'T00:00:00Z');
+      const hasta = e.hasta instanceof Date && !isNaN(e.hasta) ? e.hasta : null;
 
-    if (e.repeat === 'semanal') {
-      return eventDate.getUTCDay() === dateObj.getUTCDay() && dateObj >= eventDate && (!hasta || dateObj <= hasta);
-    }
-    if (e.repeat === 'anual') {
-      const sameDayAndMonth = eventDate.getUTCDate() === dateObj.getUTCDate() && eventDate.getUTCMonth() === dateObj.getUTCMonth();
-      return sameDayAndMonth && (!hasta || dateObj <= hasta);
-    }
-    return e.date === cellDate;
-  });
-
-  // Eliminar duplicados por título, fecha y tipo
-  const seen = new Set();
-  const dayEvents = dayEventsRaw.filter(e => {
-    const key = `${e.date}|${e.title}|${e.type}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+      if (e.repeat === 'semanal') {
+        return eventDate.getUTCDay() === dateObj.getUTCDay() && dateObj >= eventDate && (!hasta || dateObj <= hasta);
+      }
+      if (e.repeat === 'anual') {
+        const sameDayAndMonth = eventDate.getUTCDate() === dateObj.getUTCDate() && eventDate.getUTCMonth() === dateObj.getUTCMonth();
+        return sameDayAndMonth && (!hasta || dateObj <= hasta);
+      }
+      return e.date === cellDate;
+    });
 
     if (dayEvents.length > 0) hayEventos = true;
 
+    const seen = new Set();
     dayEvents.forEach(event => {
+      const key = `${event.title}-${event.type}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
 
@@ -198,7 +189,6 @@ function generateCalendar(year, month) {
       eventEl.style.backgroundColor = colores[tipo] || '#e2e3e5';
 
       if (tipo === 'cumpleaños') {
-        console.log('🎂 Cumpleaños renderizado:', event);
         let texto = `🎂 ${event.title}`;
         if (typeof event.edad === 'number') {
           texto += ` (${event.edad} años)`;
