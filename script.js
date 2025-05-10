@@ -67,7 +67,15 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         edad: mostrarEdad ? edad : null
       };
     });
-    events = events.concat(cumpleañosMapeados);
+    // Filtrar duplicados antes de combinar
+    const eventosUnicos = cumpleañosMapeados.filter(cumple => {
+      return !events.some(ev =>
+        ev.date === cumple.date &&
+        ev.title.toLowerCase() === cumple.title.toLowerCase() &&
+        ev.type === 'cumpleaños'
+      );
+    });
+    events = events.concat(eventosUnicos);
     verificarInicio();
   });
 
@@ -148,20 +156,29 @@ function generateCalendar(year, month) {
     dateLabel.textContent = day;
     dayCell.appendChild(dateLabel);
 
-    const dayEvents = events.filter(e => {
-      if (e.error) return false;
-      const eventDate = new Date(e.date + 'T00:00:00Z');
-      const hasta = e.hasta instanceof Date && !isNaN(e.hasta) ? e.hasta : null;
+    const dayEventsRaw = events.filter(e => {
+    if (e.error) return false;
+    const eventDate = new Date(e.date + 'T00:00:00Z');
+    const hasta = e.hasta instanceof Date && !isNaN(e.hasta) ? e.hasta : null;
 
-      if (e.repeat === 'semanal') {
-        return eventDate.getUTCDay() === dateObj.getUTCDay() && dateObj >= eventDate && (!hasta || dateObj <= hasta);
-      }
-      if (e.repeat === 'anual') {
-        const sameDayAndMonth = eventDate.getUTCDate() === dateObj.getUTCDate() && eventDate.getUTCMonth() === dateObj.getUTCMonth();
-        return sameDayAndMonth && (!hasta || dateObj <= hasta);
-      }
-      return e.date === cellDate;
-    });
+    if (e.repeat === 'semanal') {
+      return eventDate.getUTCDay() === dateObj.getUTCDay() && dateObj >= eventDate && (!hasta || dateObj <= hasta);
+    }
+    if (e.repeat === 'anual') {
+      const sameDayAndMonth = eventDate.getUTCDate() === dateObj.getUTCDate() && eventDate.getUTCMonth() === dateObj.getUTCMonth();
+      return sameDayAndMonth && (!hasta || dateObj <= hasta);
+    }
+    return e.date === cellDate;
+  });
+
+  // Eliminar duplicados por título, fecha y tipo
+  const seen = new Set();
+  const dayEvents = dayEventsRaw.filter(e => {
+    const key = `${e.date}|${e.title}|${e.type}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 
     if (dayEvents.length > 0) hayEventos = true;
 
