@@ -36,6 +36,36 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
     verificarInicio();
   });
 
+// Cargar feriados desde hoja "Feriados"
+fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Feriados")
+  .then(response => response.json())
+  .then(data => {
+    const feriadosMapeados = data.map(row => {
+      const fecha = new Date(row.Fecha);
+      const esFechaValida = !isNaN(fecha);
+      const tipo = (row.Tipo || '').toLowerCase();
+      const coloresFeriado = {
+        'feriado inamovible': 'feriado-inamovible',
+        'trasladable': 'feriado-trasladable',
+        'feriado puente': 'feriado-puente',
+        'no laborable': 'feriado-nolaborable'
+      };
+
+      return {
+        date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
+        rawDate: row.Fecha || '',
+        title: row.Conmemoracion || 'Feriado',
+        type: 'feriado',
+        time: '',
+        repeat: 'anual',
+        claseFeriado: coloresFeriado[tipo] || 'feriado',
+        error: !esFechaValida
+      };
+    }).filter(e => !e.error);
+    events = [...events, ...feriadosMapeados];
+    verificarInicio();
+  });
+
 // Cargar eventos generales
 fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
   .then(response => response.json())
@@ -56,9 +86,7 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         error: !esFechaValida
       };
     });
-
-    // Unir eventos sin sobrescribir los cumpleaños
-    events = [...otrosEventos, ...cumpleaños];
+    events = [...otrosEventos, ...cumpleaños, ...events];
     verificarInicio();
   });
 
@@ -176,25 +204,19 @@ function generateCalendar(year, month) {
 
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
+      if (event.type === 'feriado' && event.claseFeriado) {
+        eventEl.classList.add(event.claseFeriado);
+      } else {
+        eventEl.classList.add(event.type);
+      }
 
-      const tipo = event.type;
-      const colores = {
-        'cumpleaños': '#d1e7ff',
-        'reunión': '#d4edda',
-        'cena': '#ffeeba',
-        'aniversario': '#ffe9a9',
-        'feriado': '#f8d7da',
-        'otro': '#e2e3e5'
-      };
-      eventEl.style.backgroundColor = colores[tipo] || '#e2e3e5';
-
-      if (tipo === 'cumpleaños') {
+      if (event.type === 'cumpleaños') {
         let texto = `🎂 ${event.title}`;
         if (typeof event.edad === 'number') {
           texto += ` (${event.edad} años)`;
         }
         eventEl.textContent = texto;
-      } else if (tipo === 'aniversario') {
+      } else if (event.type === 'aniversario') {
         const yearStart = new Date(event.rawDate).getFullYear();
         const currentYear = dateObj.getUTCFullYear();
         const years = currentYear - yearStart;
