@@ -1,8 +1,7 @@
 let events = [];
 let consignas = [];
 let cumpleaños = [];
-let currentDate = new Date(); // Usará la fecha actual del sistema
-
+let currentDate = new Date(); // Mostrar el mes actual al iniciar
 
 // Cargar cumpleaños primero para evitar ser sobreescritos
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Cumpleaños")
