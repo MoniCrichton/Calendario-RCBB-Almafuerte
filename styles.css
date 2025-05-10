@@ -2,7 +2,7 @@ body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
-  background: #f7f6f3;
+  background: #f7f6f3; /* Fondo cálido */
   color: #333;
 }
 
@@ -44,7 +44,8 @@ header#month-header {
   margin-top: 0.5rem;
   font-size: 1rem;
   font-style: italic;
-  color: #f1f1f1;
+  color: #ffffcc; /* visible sobre fondo azul */
+  font-weight: 500;
 }
 
 .calendar {
@@ -56,7 +57,7 @@ header#month-header {
 }
 
 .day {
-  background: #fefdf9;
+  background: #fcfbf7;
   min-height: 100px;
   padding: 5px;
   box-sizing: border-box;
@@ -74,6 +75,32 @@ header#month-header {
   padding: 2px 4px;
   font-size: 0.8rem;
   border-radius: 4px;
+  color: #333;
+}
+
+/* Estilos por tipo */
+.event.cumpleaños {
+  background-color: #dbefff;
+}
+
+.event.reunión {
+  background-color: #e3f8e1;
+}
+
+.event.cena {
+  background-color: #fff3cd;
+}
+
+.event.aniversario {
+  background-color: #ffecc7;
+}
+
+.event.feriado {
+  background-color: #f8d7da;
+}
+
+.event.otro {
+  background-color: #eaeaea;
 }
 
 footer {
