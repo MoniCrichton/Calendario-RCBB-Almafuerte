@@ -72,6 +72,16 @@ header#month-header {
   font-size: 0.9rem;
 }
 
+.day-number {
+  font-size: 0.9rem;
+}
+
+.week-day {
+  font-size: 0.65rem;
+  font-weight: normal;
+  color: #777;
+}
+
 .event {
   margin-top: 3px;
   padding: 2px 4px;
@@ -112,18 +122,6 @@ footer {
   }
 
   .date {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
-  
-}
-
-.day-number {
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-.week-day {
-  font-size: 0.7rem;
-  font-weight: normal;
-  color: #666;
 }

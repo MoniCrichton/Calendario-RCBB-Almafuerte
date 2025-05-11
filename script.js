@@ -138,7 +138,7 @@ function generateCalendar(year, month) {
   }
 
   for (let day = 1; day <= totalDays; day++) {
-    const dateObj = new Date(year, month, day); // sin UTC
+    const dateObj = new Date(Date.UTC(year, month, day));
     const cellDate = dateObj.toISOString().split('T')[0];
     const dayCell = document.createElement('div');
     dayCell.classList.add('day');
@@ -146,7 +146,7 @@ function generateCalendar(year, month) {
     const dateLabel = document.createElement('div');
     dateLabel.classList.add('date');
     const weekDay = dateObj.toLocaleDateString('es-AR', { weekday: 'short' }).toUpperCase();
-    dateLabel.textContent = `${day} ${weekDay}`;
+    dateLabel.innerHTML = `<span class='day-number'>${day}</span> <span class='week-day'>${weekDay}</span>`;
     dayCell.appendChild(dateLabel);
 
     const dayEvents = events.filter(e => {
