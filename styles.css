@@ -2,7 +2,7 @@ body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
-  background: #e8e8e8; /* gris suave */
+  background: #f7f7f7;
   color: #333;
 }
 
@@ -30,7 +30,6 @@ header#month-header {
 #month-header button:first-of-type {
   left: 1rem;
 }
-
 #month-header button:last-of-type {
   right: 1rem;
 }
@@ -41,11 +40,11 @@ header#month-header {
 }
 
 #consigna-mensual {
-  margin-top: 0.5rem;
+  text-align: center;
   font-size: 1rem;
   font-style: italic;
-  color: #222; /* mas oscuto para que contraste */
-  font-weight: 500;
+  margin: 0.5rem 0 1rem;
+  color: #333;
 }
 
 .calendar {
@@ -57,7 +56,7 @@ header#month-header {
 }
 
 .day {
-  background: #f6f6f2; /* gris calido */
+  background: #fcfcf9;
   min-height: 100px;
   padding: 5px;
   box-sizing: border-box;
@@ -75,32 +74,44 @@ header#month-header {
   padding: 2px 4px;
   font-size: 0.8rem;
   border-radius: 4px;
-  color: #333;
 }
 
-/* Estilos por tipo */
-.event.cumpleaños {
-  background-color: #dbefff;
+/* Colores específicos */
+.cumpleaños {
+  background-color: #d1e7ff;
 }
 
-.event.reunión {
-  background-color: #e3f8e1;
+.reunión {
+  background-color: #d4edda;
 }
 
-.event.cena {
-  background-color: #fff3cd;
+.cena {
+  background-color: #ffeeba;
 }
 
-.event.aniversario {
-  background-color: #ffecc7;
+.aniversario {
+  background-color: #ffe9a9;
+  font-weight: bold;
 }
 
-.event.feriado {
+.conferencia {
+  background-color: #dee2ff;
+}
+
+.feriado-inamovible {
   background-color: #f8d7da;
 }
 
-.event.otro {
-  background-color: #eaeaea;
+.feriado-trasladable {
+  background-color: #fef7d1;
+}
+
+.feriado-puente {
+  background-color: #d0e8f2;
+}
+
+.feriado-nolaborable {
+  background-color: #e2e3e5;
 }
 
 footer {
@@ -111,7 +122,7 @@ footer {
   margin-top: 2rem;
 }
 
-/* 📱 Responsive design */
+/* Responsive */
 @media (max-width: 768px) {
   .calendar {
     grid-template-columns: repeat(2, 1fr);
