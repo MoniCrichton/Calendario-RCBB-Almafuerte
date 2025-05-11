@@ -32,7 +32,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Cumpleaños")
   .then(res => res.json())
   .then(data => {
-    const hoy = new Date();
     cumpleaños = data.map(row => {
       const fecha = new Date(row.Fecha);
       const esFechaValida = !isNaN(fecha);
@@ -40,9 +39,8 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
 
       let edad = null;
       if (esFechaValida && mostrarEdad) {
-        edad = hoy.getFullYear() - fecha.getFullYear();
-        const cumpleEsteAño = new Date(hoy.getFullYear(), fecha.getMonth(), fecha.getDate());
-        if (cumpleEsteAño > hoy) edad--;
+        const añoDelEvento = currentDate.getFullYear();
+        edad = añoDelEvento - fecha.getFullYear();
       }
 
       return {
