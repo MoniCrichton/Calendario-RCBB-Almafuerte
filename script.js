@@ -1,23 +1,47 @@
+// script.js
 let events = [];
 let consignas = [];
 let cumpleaños = [];
-let currentDate = new Date(); // Mostrar el mes actual al iniciar
+let emojis = {};
+let currentDate = new Date();
 
-// Cargar cumpleaños primero para evitar ser sobreescritos
-fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Cumpleaños")
+fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Emojis")
   .then(response => response.json())
   .then(data => {
-    const cumpleañosMapeados = data.map(row => {
+    emojis = data.reduce((acc, row) => {
+      const tipo = (row.Tipo || '').trim().toLowerCase();
+      const emoji = (row.Emoji || '').trim();
+      if (tipo && emoji) acc[tipo] = emoji;
+      return acc;
+    }, {});
+    verificarInicio();
+  });
+
+fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
+  .then(res => res.json())
+  .then(data => {
+    consignas = data.map(row => ({
+      anio: parseInt(row.Año),
+      mes: parseInt(row.Mes),
+      texto: row.Consigna
+    }));
+    verificarInicio();
+  });
+
+fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Cumpleaños")
+  .then(res => res.json())
+  .then(data => {
+    const hoy = new Date();
+    cumpleaños = data.map(row => {
       const fecha = new Date(row.Fecha);
       const esFechaValida = !isNaN(fecha);
       const mostrarEdad = (row.MostrarEdad || '').trim().toUpperCase() === 'S';
 
       let edad = null;
       if (esFechaValida && mostrarEdad) {
-        const currentYear = currentDate.getFullYear();
-        const cumpleEsteAño = new Date(currentYear, fecha.getMonth(), fecha.getDate());
-        edad = currentYear - fecha.getFullYear();
-        if (cumpleEsteAño < new Date(currentDate)) edad--;
+        edad = hoy.getFullYear() - fecha.getFullYear();
+        const cumpleEsteAño = new Date(hoy.getFullYear(), fecha.getMonth(), fecha.getDate());
+        if (cumpleEsteAño > hoy) edad--;
       }
 
       return {
@@ -32,57 +56,35 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         edad: mostrarEdad ? edad : null
       };
     });
-    cumpleaños = cumpleañosMapeados;
     verificarInicio();
   });
 
-// Cargar feriados desde hoja "Feriados"
-let feriadosMapeados = [];
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Feriados")
-  .then(response => response.json())
+  .then(res => res.json())
   .then(data => {
-    feriadosMapeados = data.map(row => {
+    const feriados = data.map(row => {
       const fecha = new Date(row.Fecha);
       const esFechaValida = !isNaN(fecha);
-      const tipo = (row.Tipo || '').toLowerCase();
-      const coloresFeriado = {
-        'feriado inamovible': 'feriado-inamovible',
-        'trasladable': 'feriado-trasladable',
-        'feriado puente': 'feriado-puente',
-        'no laborable': 'feriado-nolaborable'
-      };
-
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
         rawDate: row.Fecha || '',
-        title: row.Conmemoracion || 'Feriado',
-        type: 'feriado',
+        title: (row.Conmemoracion || '').trim() || 'Feriado',
         time: '',
+        type: 'feriado',
         repeat: 'anual',
-        claseFeriado: coloresFeriado[tipo] || 'feriado',
-        error: !esFechaValida
+        hasta: null,
+        error: !esFechaValida,
+        feriadoTipo: (row.Tipo || '').trim()
       };
-    }).filter(e => !e.error);
+    });
+    events = feriados.concat(events);
     verificarInicio();
   });
 
-// Cargar consignas mensuales
-fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
-  .then(response => response.json())
-  .then(data => {
-    consignas = data.map(row => ({
-      anio: parseInt(row.Año),
-      mes: parseInt(row.Mes),
-      texto: row.Consigna
-    }));
-    verificarInicio();
-  });
-
-// Cargar eventos generales
 fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
-  .then(response => response.json())
+  .then(res => res.json())
   .then(data => {
-    const otrosEventos = data.map(row => {
+    const procesados = data.map(row => {
       const fecha = new Date(row.Fecha);
       const hasta = row.Hasta ? new Date(row.Hasta) : null;
       const esFechaValida = !isNaN(fecha);
@@ -92,18 +94,18 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         rawDate: row.Fecha || '',
         title: (row.Titulo || '').trim() || 'Sin título',
         time: row['Hora Inicio'] ? row['Hora Inicio'].trim() : '',
-        type: (row.Tipo || 'Otro').trim().toLowerCase(),
+        type: (row.Tipo || 'otro').trim().toLowerCase(),
         repeat: (row.Repetir || '').trim().toLowerCase(),
         hasta: hasta,
         error: !esFechaValida
       };
     });
-    events = [...cumpleaños, ...feriadosMapeados, ...otrosEventos];
+    events = cumpleaños.concat(events).concat(procesados);
     verificarInicio();
   });
 
 function verificarInicio() {
-  if (events.length > 0 && consignas.length > 0) {
+  if (emojis && consignas.length > 0 && events.length > 0) {
     generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
   }
 }
@@ -122,14 +124,12 @@ function generateCalendar(year, month) {
   const startDay = (firstDay.getDay() + 6) % 7;
   const totalDays = lastDay.getDate();
 
-  const mesActual = document.getElementById('mes-actual');
-  mesActual.textContent = firstDay.toLocaleString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+  const header = document.getElementById('month-header');
+  header.querySelector('#mes-actual').textContent = firstDay.toLocaleString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
 
   const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
   const consignaDiv = document.getElementById('consigna-mensual');
   consignaDiv.textContent = consigna ? consigna.texto : '';
-
-  let hayEventos = false;
 
   for (let i = 0; i < startDay; i++) {
     const empty = document.createElement('div');
@@ -157,53 +157,45 @@ function generateCalendar(year, month) {
         return eventDate.getUTCDay() === dateObj.getUTCDay() && dateObj >= eventDate && (!hasta || dateObj <= hasta);
       }
       if (e.repeat === 'anual') {
-        const sameDayAndMonth = eventDate.getUTCDate() === dateObj.getUTCDate() && eventDate.getUTCMonth() === dateObj.getUTCMonth();
-        return sameDayAndMonth && (!hasta || dateObj <= hasta);
+        return eventDate.getUTCDate() === dateObj.getUTCDate() && eventDate.getUTCMonth() === dateObj.getUTCMonth() && (!hasta || dateObj <= hasta);
       }
       return e.date === cellDate;
     });
 
-    if (dayEvents.length > 0) hayEventos = true;
+    dayEvents.sort((a, b) => {
+      const orden = { 'cumpleaños': 0, 'feriado': 1, 'reunión': 2, 'conferencia': 3, 'cena': 4, 'actividad membresia': 5, 'evento': 6, 'ri': 7, 'otro': 99 };
+      return (orden[a.type] || 99) - (orden[b.type] || 99);
+    });
 
-    const seen = new Set();
     dayEvents.forEach(event => {
-      const key = `${event.title}-${event.type}`;
-      if (seen.has(key)) return;
-      seen.add(key);
-
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
-      if (event.type === 'feriado' && event.claseFeriado) {
-        eventEl.classList.add(event.claseFeriado);
-      } else {
-        eventEl.classList.add(event.type);
-      }
+      const tipo = event.type;
+      const emoji = emojis[tipo] || '';
 
-      if (event.type === 'cumpleaños') {
-        let texto = `🎂 ${event.title}`;
+      if (tipo === 'cumpleaños') {
+        let texto = `${emoji} ${event.title}`;
         if (typeof event.edad === 'number') {
           texto += ` (${event.edad} años)`;
         }
         eventEl.textContent = texto;
-      } else if (event.type === 'aniversario') {
+        eventEl.style.backgroundColor = '#d1e7ff';
+
+      } else if (tipo === 'aniversario') {
         const yearStart = new Date(event.rawDate).getFullYear();
         const currentYear = dateObj.getUTCFullYear();
         const years = currentYear - yearStart;
-        eventEl.textContent = `${event.title} (${years} años)`;
+        eventEl.textContent = `${emoji} ${event.title} (${years} años)`;
         eventEl.style.fontWeight = 'bold';
+        eventEl.style.backgroundColor = '#ffe9a9';
+
+      } else if (tipo === 'feriado') {
+        eventEl.textContent = `${emoji} ${event.title}`;
+        eventEl.style.backgroundColor = '#f8d7da';
+
       } else {
-        const iconos = {
-  'reunión': '🗓️',
-  'conferencia': '📢',
-  'actividad membresia': '🤝',
-  'evento': '📌',
-  'ri': '🌍',
-  'cena': '🍽️',
-  'feriado': '🏛️',
-  'otro': '📝'
-};
-const emoji = iconos[event.type] || '';
-eventEl.textContent = `${emoji} ${event.time ? event.time + ' ' : ''}${event.title}`;
+        eventEl.textContent = `${emoji} ${event.time ? event.time + ' ' : ''}${event.title}`;
+        eventEl.style.backgroundColor = '#e2e3e5';
       }
 
       dayCell.appendChild(eventEl);
@@ -211,22 +203,4 @@ eventEl.textContent = `${emoji} ${event.time ? event.time + ' ' : ''}${event.tit
 
     calendar.appendChild(dayCell);
   }
-
-  if (!hayEventos) {
-    const aviso = document.createElement('div');
-    aviso.style.textAlign = 'center';
-    aviso.style.margin = '1rem';
-    aviso.style.color = '#999';
-    aviso.textContent = 'No hay eventos en este mes';
-    calendar.appendChild(aviso);
-  }
-
-  const errorEvents = events.filter(e => e.error && e.title);
-  errorEvents.forEach(event => {
-    const errorEl = document.createElement('div');
-    errorEl.classList.add('event');
-    errorEl.style.backgroundColor = '#ffcccc';
-    errorEl.textContent = `⚠ ${event.title}: fecha inválida`;
-    calendar.appendChild(errorEl);
-  });
 }
