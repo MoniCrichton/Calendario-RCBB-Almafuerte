@@ -145,7 +145,8 @@ function generateCalendar(year, month) {
 
     const dateLabel = document.createElement('div');
     dateLabel.classList.add('date');
-    dateLabel.textContent = day;
+    const weekDay = dateObj.toLocaleDateString('es-AR', { weekday: 'short' }).toUpperCase();
+    dateLabel.textContent = `${day} ${weekDay}`;
     dayCell.appendChild(dateLabel);
 
     const dayEvents = events.filter(e => {

@@ -63,6 +63,8 @@ header#month-header {
   position: relative;
   border: 1px solid #e0e0e0;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .date {
@@ -79,7 +81,15 @@ header#month-header {
   word-wrap: break-word;
 }
 
-/* 📱 Responsive design */
+footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  background-color: #f1f1f1;
+  margin-top: 2rem;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .calendar {
     grid-template-columns: repeat(2, 1fr);
@@ -98,6 +108,10 @@ header#month-header {
   }
 
   .day {
-    min-height: 80px;
+    min-height: auto;
+  }
+
+  .date {
+    font-size: 1rem;
   }
 }
