@@ -138,7 +138,7 @@ function generateCalendar(year, month) {
   }
 
   for (let day = 1; day <= totalDays; day++) {
-    const dateObj = new Date(Date.UTC(year, month, day));
+    const dateObj = new Date(year, month, day);
     const cellDate = dateObj.toISOString().split('T')[0];
     const dayCell = document.createElement('div');
     dayCell.classList.add('day');
