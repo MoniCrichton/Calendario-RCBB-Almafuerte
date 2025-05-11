@@ -2,6 +2,7 @@
 let events = [];
 let consignas = [];
 let cumpleaños = [];
+let feriados = [];
 let emojis = {};
 let currentDate = new Date();
 
@@ -62,7 +63,7 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Feriados")
   .then(res => res.json())
   .then(data => {
-    const feriados = data.map(row => {
+    feriados = data.map(row => {
       const fecha = new Date(row.Fecha);
       const esFechaValida = !isNaN(fecha);
       return {
@@ -77,7 +78,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         feriadoTipo: (row.Tipo || '').trim()
       };
     });
-    events = feriados.concat(events);
     verificarInicio();
   });
 
@@ -100,12 +100,12 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         error: !esFechaValida
       };
     });
-    events = cumpleaños.concat(events).concat(procesados);
+    events = [...cumpleaños, ...feriados, ...procesados];
     verificarInicio();
   });
 
 function verificarInicio() {
-  if (emojis && consignas.length > 0 && events.length > 0) {
+  if (emojis && consignas.length && cumpleaños.length && feriados.length && events.length) {
     generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
   }
 }
@@ -146,7 +146,7 @@ function generateCalendar(year, month) {
     const dateLabel = document.createElement('div');
     dateLabel.classList.add('date');
     const weekDay = dateObj.toLocaleDateString('es-AR', { weekday: 'short' }).toUpperCase();
-    dateLabel.innerHTML = `<span class='day-number'>${day}</span> <span class='week-day'>${weekDay}</span>`;
+    dateLabel.innerHTML = `<span class='week-day'>${weekDay}</span> <span class='day-number'>${day}</span>`;
     dayCell.appendChild(dateLabel);
 
     const dayEvents = events.filter(e => {
@@ -164,7 +164,18 @@ function generateCalendar(year, month) {
     });
 
     dayEvents.sort((a, b) => {
-      const orden = { 'cumpleaños': 0, 'feriado': 1, 'reunión': 2, 'conferencia': 3, 'cena': 4, 'actividad membresia': 5, 'evento': 6, 'ri': 7, 'otro': 99 };
+      const orden = {
+        'cumpleaños': 0,
+        'feriado': 1,
+        'aniversario': 2,
+        'reunión': 3,
+        'conferencia': 4,
+        'cena': 5,
+        'actividad membresia': 6,
+        'evento': 7,
+        'ri': 8,
+        'otro': 99
+      };
       return (orden[a.type] || 99) - (orden[b.type] || 99);
     });
 
