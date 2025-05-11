@@ -114,7 +114,10 @@ footer {
   .date {
     font-size: 1rem;
   }
-  .day-number {
+  
+}
+
+.day-number {
   font-size: 1rem;
   font-weight: bold;
 }
@@ -123,6 +126,4 @@ footer {
   font-size: 0.7rem;
   font-weight: normal;
   color: #666;
-}
-
 }
