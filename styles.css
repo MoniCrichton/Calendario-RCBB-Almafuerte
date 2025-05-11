@@ -2,7 +2,7 @@ body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
-  background: #f7f6f3; /* Fondo cálido */
+  background: #e8e8e8; /* gris suave */
   color: #333;
 }
 
@@ -44,7 +44,7 @@ header#month-header {
   margin-top: 0.5rem;
   font-size: 1rem;
   font-style: italic;
-  color: #ffffcc; /* visible sobre fondo azul */
+  color: #222; /* mas oscuto para que contraste */
   font-weight: 500;
 }
 
@@ -57,7 +57,7 @@ header#month-header {
 }
 
 .day {
-  background: #fcfbf7;
+  background: #f6f6f2; /* gris calido */
   min-height: 100px;
   padding: 5px;
   box-sizing: border-box;
