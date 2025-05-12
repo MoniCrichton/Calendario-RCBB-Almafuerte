@@ -41,7 +41,7 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         const mesNacimiento = fecha.getMonth();
         const diaNacimiento = fecha.getDate();
 
-        const añoEvento = currentDate.getFullYear(); // el año que se está viendo en el calendario
+        const añoEvento = currentDate.getFullYear();
         const cumpleEsteAño = new Date(añoEvento, mesNacimiento, diaNacimiento);
         edad = añoEvento - añoNacimiento;
       }
@@ -120,6 +120,9 @@ function generateCalendar(year, month) {
 
   const header = document.getElementById('month-header');
   const consignaDiv = document.getElementById('consigna-mensual');
+  const mesActual = document.getElementById('mes-actual');
+  mesActual.textContent = firstDay.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+
   const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
   consignaDiv.textContent = consigna ? consigna.texto : '';
 
