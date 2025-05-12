@@ -7,6 +7,19 @@ let efemerides = [];
 let emojis = {};
 let currentDate = new Date();
 
+function verificarInicio() {
+  if (
+    Object.keys(emojis).length &&
+    consignas.length &&
+    cumpleaños.length &&
+    feriados.length &&
+    efemerides.length
+  ) {
+    events = [...cumpleaños, ...feriados, ...efemerides, ...events];
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+  }
+}
+
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Emojis")
   .then(response => response.json())
   .then(data => {
@@ -40,10 +53,11 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
 
       let edad = null;
       if (esFechaValida && mostrarEdad) {
-        const añoCumple = currentDate.getFullYear();
-        edad = añoCumple - fecha.getFullYear();
-        const cumpleEsteAño = new Date(añoCumple, fecha.getMonth(), fecha.getDate());
-        if (cumpleEsteAño > currentDate) edad--;
+        const añoCumple = fecha.getFullYear();
+        const hoy = new Date();
+        const proximoCumple = new Date(hoy.getFullYear(), fecha.getMonth(), fecha.getDate());
+        edad = hoy.getFullYear() - añoCumple;
+        if (proximoCumple > hoy) edad++;
       }
 
       return {
@@ -124,16 +138,3 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
     events = [...cumpleaños, ...feriados, ...efemerides, ...procesados];
     verificarInicio();
   });
-
-function verificarInicio() {
-  if (
-    Object.keys(emojis).length &&
-    consignas.length &&
-    cumpleaños.length &&
-    feriados.length &&
-    efemerides.length &&
-    events.length
-  ) {
-    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-  }
-}
