@@ -37,11 +37,13 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
 
       let edad = null;
       if (esFechaValida && mostrarEdad) {
-        const añoCumple = fecha.getFullYear();
-        const hoy = new Date();
-        const proximoCumple = new Date(hoy.getFullYear(), fecha.getMonth(), fecha.getDate());
-        edad = hoy.getFullYear() - añoCumple;
-        if (proximoCumple > hoy) edad++;
+        const añoNacimiento = fecha.getFullYear();
+        const mesNacimiento = fecha.getMonth();
+        const diaNacimiento = fecha.getDate();
+
+        const añoEvento = currentDate.getFullYear(); // el año que se está viendo en el calendario
+        const cumpleEsteAño = new Date(añoEvento, mesNacimiento, diaNacimiento);
+        edad = añoEvento - añoNacimiento;
       }
 
       return {
