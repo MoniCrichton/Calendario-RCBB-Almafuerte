@@ -135,6 +135,6 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         error: !esFechaValida
       };
     });
-    events = [...cumpleaños, ...feriados, ...efemerides, ...procesados];
+    events = [...events,  ...procesados];
     verificarInicio();
   });
