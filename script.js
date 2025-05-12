@@ -101,3 +101,97 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
     events = [...cumpleaños, ...feriados, ...procesados];
     generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
   });
+
+function cambiarMes(delta) {
+  currentDate.setMonth(currentDate.getMonth() + delta);
+  generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+}
+
+function generateCalendar(year, month) {
+  const calendar = document.getElementById('calendar');
+  calendar.innerHTML = '';
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startDay = (firstDay.getDay() + 6) % 7;
+  const totalDays = lastDay.getDate();
+
+  const header = document.getElementById('month-header');
+  const consignaDiv = document.getElementById('consigna-mensual');
+  const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
+  consignaDiv.textContent = consigna ? consigna.texto : '';
+
+  for (let i = 0; i < startDay; i++) {
+    const empty = document.createElement('div');
+    empty.classList.add('day');
+    calendar.appendChild(empty);
+  }
+
+  for (let day = 1; day <= totalDays; day++) {
+    const dateObj = new Date(year, month, day);
+    const cellDate = dateObj.toISOString().split('T')[0];
+    const dayCell = document.createElement('div');
+    dayCell.classList.add('day');
+
+    const dateLabel = document.createElement('div');
+    dateLabel.classList.add('date');
+    const weekDay = dateObj.toLocaleDateString('es-AR', { weekday: 'short' }).toUpperCase();
+    dateLabel.innerHTML = `<span class='week-day'>${weekDay}</span> <span class='day-number'>${day}</span>`;
+    dayCell.appendChild(dateLabel);
+
+    const dayEvents = events.filter(e => {
+      if (e.error) return false;
+      const eventDate = new Date(e.date + 'T00:00:00Z');
+      const hasta = e.hasta instanceof Date && !isNaN(e.hasta) ? e.hasta : null;
+
+      if (e.repeat === 'semanal') {
+        return eventDate.getUTCDay() === dateObj.getUTCDay() && dateObj >= eventDate && (!hasta || dateObj <= hasta);
+      }
+      if (e.repeat === 'anual') {
+        return eventDate.getUTCDate() === dateObj.getUTCDate() && eventDate.getUTCMonth() === dateObj.getUTCMonth() && (!hasta || dateObj <= hasta);
+      }
+      return e.date === cellDate;
+    });
+
+    dayEvents.sort((a, b) => {
+      const orden = { 'cumpleaños': 0, 'feriado': 1, 'reunión': 2, 'conferencia': 3, 'cena': 4, 'actividad membresia': 5, 'evento': 6, 'ri': 7, 'otro': 99 };
+      return (orden[a.type] || 99) - (orden[b.type] || 99);
+    });
+
+    dayEvents.forEach(event => {
+      const eventEl = document.createElement('div');
+      eventEl.classList.add('event');
+      const tipo = event.type;
+      const emoji = emojis[tipo] || '';
+
+      if (tipo === 'cumpleaños') {
+        let texto = `${emoji} ${event.title}`;
+        if (typeof event.edad === 'number') {
+          texto += ` (${event.edad} años)`;
+        }
+        eventEl.textContent = texto;
+        eventEl.style.backgroundColor = '#d1e7ff';
+
+      } else if (tipo === 'aniversario') {
+        const yearStart = new Date(event.rawDate).getFullYear();
+        const currentYear = dateObj.getFullYear();
+        const years = currentYear - yearStart;
+        eventEl.textContent = `${emoji} ${event.title} (${years} años)`;
+        eventEl.style.fontWeight = 'bold';
+        eventEl.style.backgroundColor = '#ffe9a9';
+
+      } else if (tipo === 'feriado') {
+        eventEl.textContent = `${emoji} ${event.title}`;
+        eventEl.style.backgroundColor = '#f8d7da';
+
+      } else {
+        eventEl.textContent = `${emoji} ${event.time ? event.time + ' ' : ''}${event.title}`;
+        eventEl.style.backgroundColor = '#e2e3e5';
+      }
+
+      dayCell.appendChild(eventEl);
+    });
+
+    calendar.appendChild(dayCell);
+  }
+}
