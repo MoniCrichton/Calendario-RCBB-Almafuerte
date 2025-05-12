@@ -6,18 +6,6 @@ let feriados = [];
 let emojis = {};
 let currentDate = new Date();
 
-function verificarInicio() {
-  if (
-    Object.keys(emojis).length &&
-    consignas.length &&
-    cumpleaños.length &&
-    feriados.length
-  ) {
-    events = [...cumpleaños, ...feriados, ...events];
-    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-  }
-}
-
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Emojis")
   .then(response => response.json())
   .then(data => {
@@ -27,7 +15,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       if (tipo && emoji) acc[tipo] = emoji;
       return acc;
     }, {});
-    verificarInicio();
   });
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
@@ -38,7 +25,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       mes: parseInt(row.Mes),
       texto: row.Consigna
     }));
-    verificarInicio();
   });
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Cumpleaños")
@@ -70,7 +56,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         edad: mostrarEdad ? edad : null
       };
     });
-    verificarInicio();
   });
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Feriados")
@@ -91,7 +76,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         feriadoTipo: (row.Tipo || '').trim()
       };
     });
-    verificarInicio();
   });
 
 fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
@@ -113,6 +97,7 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         error: !esFechaValida
       };
     });
+
     events = [...cumpleaños, ...feriados, ...procesados];
-    verificarInicio();
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
   });
