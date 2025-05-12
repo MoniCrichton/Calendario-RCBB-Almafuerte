@@ -3,7 +3,6 @@ let events = [];
 let consignas = [];
 let cumpleaños = [];
 let feriados = [];
-let efemerides = [];
 let emojis = {};
 let currentDate = new Date();
 
@@ -12,10 +11,9 @@ function verificarInicio() {
     Object.keys(emojis).length &&
     consignas.length &&
     cumpleaños.length &&
-    feriados.length &&
-    efemerides.length
+    feriados.length
   ) {
-    events = [...cumpleaños, ...feriados, ...efemerides, ...events];
+    events = [...cumpleaños, ...feriados, ...events];
     generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
   }
 }
@@ -96,26 +94,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
     verificarInicio();
   });
 
-fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Efemerides")
-  .then(res => res.json())
-  .then(data => {
-    efemerides = data.map(row => {
-      const fecha = new Date(row.Fecha);
-      const esFechaValida = !isNaN(fecha);
-      return {
-        date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
-        rawDate: row.Fecha || '',
-        title: (row.Titulo || '').trim() || 'Efeméride',
-        time: '',
-        type: 'efemeride',
-        repeat: 'anual',
-        hasta: null,
-        error: !esFechaValida
-      };
-    });
-    verificarInicio();
-  });
-
 fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
   .then(res => res.json())
   .then(data => {
@@ -135,6 +113,6 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         error: !esFechaValida
       };
     });
-    events = [...events,  ...procesados];
+    events = [...cumpleaños, ...feriados, ...procesados];
     verificarInicio();
   });
