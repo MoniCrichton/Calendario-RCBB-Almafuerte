@@ -124,3 +124,16 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
     events = [...cumpleaños, ...feriados, ...efemerides, ...procesados];
     verificarInicio();
   });
+
+function verificarInicio() {
+  if (
+    Object.keys(emojis).length &&
+    consignas.length &&
+    cumpleaños.length &&
+    feriados.length &&
+    efemerides.length &&
+    events.length
+  ) {
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+  }
+}
