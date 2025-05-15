@@ -15,7 +15,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       if (tipo && emoji) acc[tipo] = emoji;
       return acc;
     }, {});
-    verificarInicio();
   });
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
@@ -26,7 +25,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       mes: parseInt(row.Mes),
       texto: row.Consigna
     }));
-    verificarInicio();
   });
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Cumpleaños")
@@ -37,11 +35,7 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       const esFechaValida = !isNaN(fecha);
       const mostrarEdad = (row.MostrarEdad || '').trim().toUpperCase() === 'S';
 
-      let edad = null;
-      if (esFechaValida && mostrarEdad) {
-        const añoDelEvento = currentDate.getFullYear();
-        edad = añoDelEvento - fecha.getFullYear();
-      }
+      const añoNacimiento = esFechaValida ? fecha.getFullYear() : null;
 
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
@@ -52,10 +46,10 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         repeat: 'anual',
         hasta: null,
         error: !esFechaValida,
-        edad: mostrarEdad ? edad : null
+        mostrarEdad: mostrarEdad,
+        añoNacimiento: mostrarEdad ? añoNacimiento : null
       };
     });
-    verificarInicio();
   });
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Feriados")
@@ -76,7 +70,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         feriadoTipo: (row.Tipo || '').trim()
       };
     });
-    verificarInicio();
   });
 
 fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
@@ -98,15 +91,10 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         error: !esFechaValida
       };
     });
-    events = [...cumpleaños, ...feriados, ...procesados];
-    verificarInicio();
-  });
 
-function verificarInicio() {
-  if (emojis && consignas.length && cumpleaños.length && feriados.length && events.length) {
+    events = [...cumpleaños, ...feriados, ...procesados];
     generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-  }
-}
+  });
 
 function cambiarMes(delta) {
   currentDate.setMonth(currentDate.getMonth() + delta);
@@ -123,10 +111,12 @@ function generateCalendar(year, month) {
   const totalDays = lastDay.getDate();
 
   const header = document.getElementById('month-header');
-  header.querySelector('#mes-actual').textContent = firstDay.toLocaleString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
-
-  const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
   const consignaDiv = document.getElementById('consigna-mensual');
+  const mesActual = document.getElementById('mes-actual');
+  if (mesActual) {
+    mesActual.textContent = firstDay.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+  }
+  const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
   consignaDiv.textContent = consigna ? consigna.texto : '';
 
   for (let i = 0; i < startDay; i++) {
@@ -162,18 +152,7 @@ function generateCalendar(year, month) {
     });
 
     dayEvents.sort((a, b) => {
-      const orden = {
-        'cumpleaños': 0,
-        'feriado': 1,
-        'aniversario': 2,
-        'reunión': 3,
-        'conferencia': 4,
-        'cena': 5,
-        'actividad membresia': 6,
-        'evento': 7,
-        'ri': 8,
-        'otro': 99
-      };
+      const orden = { 'cumpleaños': 0, 'feriado': 1, 'reunión': 2, 'conferencia': 3, 'cena': 4, 'actividad membresia': 5, 'evento': 6, 'ri': 7, 'otro': 99 };
       return (orden[a.type] || 99) - (orden[b.type] || 99);
     });
 
@@ -185,15 +164,16 @@ function generateCalendar(year, month) {
 
       if (tipo === 'cumpleaños') {
         let texto = `${emoji} ${event.title}`;
-        if (typeof event.edad === 'number') {
-          texto += ` (${event.edad} años)`;
+        if (event.mostrarEdad && typeof event.añoNacimiento === 'number') {
+          const edad = year - event.añoNacimiento;
+          texto += ` (${edad} años)`;
         }
         eventEl.textContent = texto;
         eventEl.style.backgroundColor = '#d1e7ff';
 
       } else if (tipo === 'aniversario') {
         const yearStart = new Date(event.rawDate).getFullYear();
-        const currentYear = dateObj.getUTCFullYear();
+        const currentYear = dateObj.getFullYear();
         const years = currentYear - yearStart;
         eventEl.textContent = `${emoji} ${event.title} (${years} años)`;
         eventEl.style.fontWeight = 'bold';
