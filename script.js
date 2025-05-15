@@ -112,6 +112,10 @@ function generateCalendar(year, month) {
 
   const header = document.getElementById('month-header');
   const consignaDiv = document.getElementById('consigna-mensual');
+  const mesActual = document.getElementById('mes-actual');
+  if (mesActual) {
+    mesActual.textContent = firstDay.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+  }
   const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
   consignaDiv.textContent = consigna ? consigna.texto : '';
 
