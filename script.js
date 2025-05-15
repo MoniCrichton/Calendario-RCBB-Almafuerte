@@ -35,16 +35,7 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       const esFechaValida = !isNaN(fecha);
       const mostrarEdad = (row.MostrarEdad || '').trim().toUpperCase() === 'S';
 
-      let edad = null;
-      if (esFechaValida && mostrarEdad) {
-        const añoNacimiento = fecha.getFullYear();
-        const mesNacimiento = fecha.getMonth();
-        const diaNacimiento = fecha.getDate();
-
-        const añoEvento = currentDate.getFullYear();
-        const cumpleEsteAño = new Date(añoEvento, mesNacimiento, diaNacimiento);
-        edad = añoEvento - añoNacimiento;
-      }
+      const añoNacimiento = esFechaValida ? fecha.getFullYear() : null;
 
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
@@ -55,7 +46,8 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         repeat: 'anual',
         hasta: null,
         error: !esFechaValida,
-        edad: mostrarEdad ? edad : null
+        mostrarEdad: mostrarEdad,
+        añoNacimiento: mostrarEdad ? añoNacimiento : null
       };
     });
   });
@@ -120,9 +112,6 @@ function generateCalendar(year, month) {
 
   const header = document.getElementById('month-header');
   const consignaDiv = document.getElementById('consigna-mensual');
-  const mesActual = document.getElementById('mes-actual');
-  mesActual.textContent = firstDay.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
-
   const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
   consignaDiv.textContent = consigna ? consigna.texto : '';
 
@@ -171,8 +160,9 @@ function generateCalendar(year, month) {
 
       if (tipo === 'cumpleaños') {
         let texto = `${emoji} ${event.title}`;
-        if (typeof event.edad === 'number') {
-          texto += ` (${event.edad} años)`;
+        if (event.mostrarEdad && typeof event.añoNacimiento === 'number') {
+          const edad = year - event.añoNacimiento;
+          texto += ` (${edad} años)`;
         }
         eventEl.textContent = texto;
         eventEl.style.backgroundColor = '#d1e7ff';
