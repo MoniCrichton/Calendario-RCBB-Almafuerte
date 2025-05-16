@@ -1,73 +1,98 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agregar Evento</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario para agregar eventos</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+    }
+    header {
+      background: #007bff;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    form {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin: 1rem 0 0.3rem;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      margin-top: 1.5rem;
+      cursor: pointer;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+    }
+  </style>
 </head>
 <body>
-  <header id="month-header">
-    <span>📅 Formulario para agregar eventos</span>
-  </header>
+  <header>📅 Formulario para agregar eventos</header>
+  <form id="eventoForm">
+    <label for="titulo">Título del evento</label>
+    <input type="text" id="titulo" name="titulo" required>
 
-  <main class="formulario-container">
-    <form id="evento-form">
-      <label>Título del evento
-        <input type="text" name="titulo" required />
-      </label>
+    <label for="fecha">Fecha</label>
+    <input type="date" id="fecha" name="fecha" required>
 
-      <label>Fecha
-        <input type="date" name="fecha" required />
-      </label>
+    <label for="hora">Hora de inicio (opcional)</label>
+    <input type="time" id="hora" name="hora">
 
-      <label>Hora de inicio (opcional)
-        <input type="time" name="hora" />
-      </label>
+    <label for="tipo">Tipo de evento</label>
+    <select id="tipo" name="tipo">
+      <option value="evento">Evento</option>
+      <option value="cumpleaños">Cumpleaños</option>
+      <option value="aniversario">Aniversario</option>
+      <option value="feriado">Feriado</option>
+    </select>
 
-      <label>Tipo de evento
-        <select name="tipo" required>
-          <option value="evento">Evento</option>
-          <option value="cumpleaños">Cumpleaños</option>
-          <option value="aniversario">Aniversario</option>
-          <option value="feriado">Feriado</option>
-          <option value="efeméride">Efeméride</option>
-        </select>
-      </label>
+    <label for="repetir">Repetir</label>
+    <select id="repetir" name="repetir">
+      <option value="">No</option>
+      <option value="anual">Anual</option>
+      <option value="semanal">Semanal</option>
+    </select>
 
-      <label>Repetir
-        <select name="repetir">
-          <option value="">No</option>
-          <option value="semanal">Semanal</option>
-          <option value="mensual">Mensual</option>
-          <option value="anual">Anual</option>
-        </select>
-      </label>
+    <label for="enviado">Enviado por</label>
+    <select id="enviado" name="enviado">
+      <option value="">Seleccionar...</option>
+      <option value="Monica Crichton">Monica Crichton</option>
+      <option value="otro">Otro</option>
+    </select>
+    <input type="text" id="otroEnviado" name="otroEnviado" placeholder="Especificar nombre" style="display:none;">
 
-      <label>Enviado por
-        <select id="enviado-por" name="enviadoPor" required>
-          <option value="">Seleccionar...</option>
-        </select>
-      </label>
+    <label for="comentarios">Comentarios (opcional)</label>
+    <textarea id="comentarios" name="comentarios" rows="3"></textarea>
 
-      <label id="otro-nombre-label" style="display:none">Nombre completo (si no está en la lista)
-        <input type="text" id="otro-nombre" name="otroNombre" />
-      </label>
-
-      <label>Comentarios (opcional)
-        <textarea name="comentarios"></textarea>
-      </label>
-
-      <button type="submit">Enviar evento</button>
-    </form>
-    <div id="mensaje-exito" style="display:none; text-align:center; margin-top:1rem; color:green">
-      ✅ Evento enviado correctamente
-    </div>
-  </main>
-
-  <footer>
-    Hecho para Rotary Club Bahia Blanca Almafuerte por Monica Crichton
-  </footer>
+    <button type="submit">Enviar evento</button>
+  </form>
+  <footer>Hecho para Rotary Club Bahía Blanca Almafuerte por Monica Crichton</footer>
 
   <script src="agregar-evento.js"></script>
 </body>
