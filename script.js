@@ -131,8 +131,8 @@ function generateCalendar(year, month) {
     const dayCell = document.createElement('div');
     dayCell.classList.add('day');
 
-    const hoy = new Date();
-    const esHoy = dateObj.toDateString() === hoy.toDateString();
+    const hoyStr = new Date().toISOString().split('T')[0];
+    const esHoy = hoyStr === cellDate;
     if (esHoy) {
       dayCell.classList.add('hoy');
     }
@@ -199,4 +199,12 @@ function generateCalendar(year, month) {
 
     calendar.appendChild(dayCell);
   }
+
+  // Desplazarse hasta el día actual solo en pantallas chicas
+  setTimeout(() => {
+    const hoy = document.querySelector('.hoy');
+    if (hoy && window.innerWidth <= 600) {
+      hoy.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 100);
 }
