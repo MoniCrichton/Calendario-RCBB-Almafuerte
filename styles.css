@@ -38,13 +38,29 @@ header#month-header {
 #mes-actual {
   font-size: 1.5rem;
   font-weight: bold;
+  text-align: center;
+}
+
+.header-logo-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.rotary-logo {
+  height: 36px;
+  width: auto;
 }
 
 #consigna-mensual {
-  margin-top: 0.5rem;
+  margin-top: 0.3rem;
   font-size: 1rem;
   font-style: italic;
   color: #f1f1f1;
+  text-align: center;
 }
 
 .calendar {
@@ -124,6 +140,28 @@ footer {
   }
 }
 
+/* Ajustes para desktop */
+@media (min-width: 768px) {
+  .rotary-logo {
+    height: 50px;
+    width: auto;
+  }
+
+  .header-logo-titulo span {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  #mes-actual {
+    margin-bottom: 0.2rem;
+  }
+
+  #consigna-mensual {
+    font-size: 1.1rem;
+  }
+}
+
+/* Formulario */
 form {
   display: flex;
   flex-direction: column;
@@ -173,4 +211,12 @@ form button:hover {
   border-radius: 12px;
   background-color: #eafff0;
   box-shadow: inset 0 0 5px rgba(0, 204, 102, 0.5);
+}
+
+.day.vacio {
+  visibility: hidden;
+  pointer-events: none;
+  border: none;
+  padding: 0;
+  margin: 0;
 }

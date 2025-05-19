@@ -107,22 +107,29 @@ function generateCalendar(year, month) {
 
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-  const startDay = (firstDay.getDay() + 6) % 7;
+  const startDay = (firstDay.getDay() + 6) % 7; // lunes = 0
   const totalDays = lastDay.getDate();
 
   const header = document.getElementById('month-header');
   const consignaDiv = document.getElementById('consigna-mensual');
   const mesActual = document.getElementById('mes-actual');
   if (mesActual) {
-    mesActual.textContent = firstDay.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase();
+    mesActual.innerHTML = `
+      <div class="header-logo-titulo">
+        <img src="assets/rotary-logo.png" alt="Rotary Logo" class="rotary-logo" />
+        <span>${firstDay.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase()}</span>
+      </div>`;
   }
+
   const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
   consignaDiv.textContent = consigna ? consigna.texto : '';
 
-  for (let i = 0; i < startDay; i++) {
-    const empty = document.createElement('div');
-    empty.classList.add('day');
-    calendar.appendChild(empty);
+  if (window.innerWidth > 600) {
+    for (let i = 0; i < startDay; i++) {
+      const empty = document.createElement('div');
+      empty.classList.add('day', 'vacio');
+      calendar.appendChild(empty);
+    }
   }
 
   for (let day = 1; day <= totalDays; day++) {
