@@ -131,6 +131,12 @@ function generateCalendar(year, month) {
     const dayCell = document.createElement('div');
     dayCell.classList.add('day');
 
+    const hoy = new Date();
+    const esHoy = dateObj.toDateString() === hoy.toDateString();
+    if (esHoy) {
+      dayCell.classList.add('hoy');
+    }
+
     const dateLabel = document.createElement('div');
     dateLabel.classList.add('date');
     const weekDay = dateObj.toLocaleDateString('es-AR', { weekday: 'short' }).toUpperCase();
