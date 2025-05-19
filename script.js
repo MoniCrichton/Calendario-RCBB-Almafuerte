@@ -114,10 +114,11 @@ function generateCalendar(year, month) {
   const mesActual = document.getElementById('mes-actual');
   if (mesActual) {
     mesActual.innerHTML = `
-      <div class="header-logo-titulo">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Rotary_International_logo.svg" alt="Rotary Logo" class="rotary-logo" />
-        <span>${firstDay.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase()}</span>
-      </div>`;
+  <div class="header-logo-titulo">
+    <img src="assets/rotary-logo.png" alt="Rotary Logo" class="rotary-logo" />
+    <span>${firstDay.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase()}</span>
+  </div>`;
+
   }
 
   const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
