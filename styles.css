@@ -40,6 +40,19 @@ header#month-header {
   font-weight: bold;
 }
 
+.header-logo-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rotary-logo {
+  width: 40px;
+  height: auto;
+}
+
 #consigna-mensual {
   margin-top: 0.5rem;
   font-size: 1rem;
