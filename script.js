@@ -213,5 +213,7 @@ function generateCalendar(year, month) {
     if (hoy && window.innerWidth <= 600) {
       hoy.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, 100);
+  }, 100);  
 }
+
+
