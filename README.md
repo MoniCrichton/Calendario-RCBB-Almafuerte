@@ -1,82 +1,75 @@
-# 📆 Calendario Rotary Club Bahía Blanca Almafuerte
+# Calendario RCBB Almafuerte
 
-Este proyecto es una herramienta digital para visualizar y gestionar de manera organizada los eventos del Rotary Club Bahía Blanca Almafuerte, con integración en tiempo real con Google Sheets y enfoque en la accesibilidad desde dispositivos móviles y de escritorio.
-
----
-
-## 🎯 Objetivo
-
-Brindar una visualización clara, moderna y accesible del calendario del club, permitiendo a socios y visitantes consultar rápidamente cumpleaños, reuniones, actividades especiales, feriados, y más.
+Este proyecto es un calendario interactivo desarrollado para el Rotary Club Bahía Blanca Almafuerte. Permite visualizar cumpleaños, feriados, eventos recurrentes y otros tipos de actividades directamente desde Google Sheets.
 
 ---
 
-## 🧩 Funcionalidades principales
+## ✅ Funcionalidades implementadas
 
-- ✅ Visualización mensual de eventos (cuadrícula de lunes a domingo).
-- ✅ Clasificación de eventos (cumpleaños, feriados, cenas, reuniones, etc.).
-- ✅ Colores distintivos por tipo de evento.
-- ✅ Repetición semanal, anual o con fecha de fin.
-- ✅ Cálculo automático de edad para cumpleaños.
-- ✅ Consigna mensual visible arriba del calendario.
-- ✅ Día actual resaltado (visual y scroll automático en celulares).
-- ✅ Integración con Google Sheets (evento sugerido → hoja Eventos Sugeridos).
-- ✅ Formulario público para sugerir eventos, con validación.
+- **Visualización mensual del calendario** con datos desde distintas hojas:
+  - `Eventos principales`
+  - `Cumpleaños`
+  - `Feriados`
+  - `Consignas mensuales`
 
----
+- **Eventos recurrentes**:
+  - Soporte para eventos **anuales**, **semanales** y con fecha de fin.
 
-## 🛠️ Tecnologías utilizadas
+- **Edad automática** en cumpleaños y aniversarios.
 
-| Tecnología       | Uso principal                              |
-|------------------|---------------------------------------------|
-| HTML / CSS       | Estructura y diseño responsivo              |
-| JavaScript       | Lógica del calendario y carga dinámica      |
-| Google Sheets API + Apps Script | Backend de eventos, sugerencias y consignas |
-| Netlify          | Hosting del sitio web                       |
-| Git + GitHub     | Control de versiones y despliegue continuo  |
-| OpenSheet (opensheet.vercel.app) | Lectura pública de hojas de cálculo |
+- **Colores diferenciados y emojis** según el tipo de evento (definido en hoja `Emojis`).
 
----
+- **Formulario público** para sugerir eventos:
+  - Envío directo a la hoja `Eventos Sugeridos`
+  - Campos: Título, Fecha, Hora, Tipo, Repetición, Enviado por, Comentarios
 
-## 📁 Estructura de archivos
+- **Adaptabilidad responsive**:
+  - Calendario en grilla de 7 columnas en computadoras
+  - Vista en dos columnas en celulares
 
-```
-📦 Calendario-RCBB-Almafuerte
-├── index.html               # Página principal del calendario
-├── styles.css               # Estilos generales y responsivos
-├── script.js                # Lógica principal de generación y carga del calendario
-├── agregar-evento.html      # Página del formulario público
-├── agregar-evento.js        # Envío de eventos sugeridos a Google Sheets
-└── README.md                # Descripción del proyecto
-```
+- **Día actual resaltado** con borde y fondo especial
+  - En celulares se desplaza automáticamente hasta el día actual
+
+- **Encabezado con logo de Rotary** y consigna mensual cargada desde la hoja `Consignas`
+
+- **Footer personalizado**:
+  > Sitio creado por Monica Crichton (Moni) para RC Bahía Blanca Almafuerte.  
+  > Inspirado en los valores de Rotary International.
 
 ---
 
-## 🚀 ¿Cómo se publica en producción?
+## 🧩 Tecnologías utilizadas
 
-1. Se trabaja en la rama `dev` para realizar cambios y pruebas.
-2. Cuando está listo, se hace un merge a `main` (rama de producción).
-3. Netlify detecta los cambios en `main` y publica automáticamente el sitio.
-
----
-
-## 📱 Acceso y uso
-
-- El calendario se puede visualizar desde computadoras, tablets y celulares.
-- En celulares, la vista es de 2 columnas y el calendario hace scroll automáticamente al día actual.
-- El formulario público permite sugerir eventos de manera sencilla y rápida.
+- **HTML/CSS/JavaScript Vanilla** (sin frameworks)
+- **Google Sheets API (via opensheet.vercel.app)**
+- **Google Apps Script** para el formulario
+- **Netlify** para despliegue
 
 ---
 
-## ✨ Créditos y agradecimientos
+## 📌 Cómo colaborar o sugerir eventos
 
-Este calendario fue desarrollado con amor y dedicación para el **Rotary Club Bahía Blanca Almafuerte**, con el objetivo de facilitar la comunicación interna y fortalecer el vínculo con la comunidad.
-
-> Hecho con 💙 por [Monica Crichton](https://github.com/MoniCrichton)  
-> Proyecto sin fines de lucro, abierto y ampliable para otros clubes o instituciones.
+1. Visitar [el formulario de agregar evento](./agregar-evento.html)
+2. Completar los datos requeridos
+3. El evento se guardará en la hoja `Eventos Sugeridos` para revisión
 
 ---
 
-## 📝 Licencia
+## 🔜 Próximas mejoras
 
-Este proyecto es de uso libre para fines educativos, institucionales o comunitarios.  
-Si querés adaptarlo para tu organización, ¡adelante! 🙌
+- Panel de administración para aceptar o rechazar sugerencias
+- Colores definidos desde la hoja `Tipos` para que se reflejen automáticamente en pantalla
+- Exportación o impresión del calendario mensual
+
+---
+
+## 📅 Ejemplo en producción
+
+Puedes ver el calendario en funcionamiento aquí:  
+👉 [calendariorcbb-dev.netlify.app](https://calendariorcbb-dev.netlify.app)
+
+---
+
+_Gracias por apoyar el servicio comunitario de RC Bahía Blanca Almafuerte._
+
+#fffce5 (amarillo pastel) o #fdf6e3 (bei

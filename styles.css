@@ -1,10 +1,20 @@
-html, body {
+/* styles.css */
+
+/* ---------------------------------- */
+/* ESTRUCTURA GENERAL */
+/* ---------------------------------- */
+
+body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
-  background: #f4f4f4;
+  background-color: #f9f6ef;
   color: #333;
 }
+
+/* ---------------------------------- */
+/* ENCABEZADO */
+/* ---------------------------------- */
 
 header#month-header {
   text-align: center;
@@ -38,7 +48,20 @@ header#month-header {
 #mes-actual {
   font-size: 1.5rem;
   font-weight: bold;
-  text-align: center;
+}
+
+#consigna-mensual {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  font-style: italic;
+  color: #f1f1f1;
+}
+
+/* Logo Rotary */
+.rotary-logo {
+  max-height: 40px;
+  margin-right: 10px;
+  vertical-align: middle;
 }
 
 .header-logo-titulo {
@@ -47,21 +70,11 @@ header#month-header {
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
-  text-align: center;
 }
 
-.rotary-logo {
-  height: 36px;
-  width: auto;
-}
-
-#consigna-mensual {
-  margin-top: 0.3rem;
-  font-size: 1rem;
-  font-style: italic;
-  color: #f1f1f1;
-  text-align: center;
-}
+/* ---------------------------------- */
+/* CALENDARIO */
+/* ---------------------------------- */
 
 .calendar {
   display: grid;
@@ -76,15 +89,24 @@ header#month-header {
 }
 
 .day {
-  background: #fefefe;
+  background: #fdfaf3;
   min-height: 100px;
   padding: 5px;
   box-sizing: border-box;
   position: relative;
-  border: 1px solid #e0e0e0;
+  border-radius: 8px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.day.vacio {
+  visibility: hidden;
+  pointer-events: none;
+  padding: 0;
+  margin: 0;
+  border: none;
 }
 
 .date {
@@ -111,57 +133,31 @@ header#month-header {
   word-wrap: break-word;
 }
 
+/* Día actual resaltado */
+.hoy {
+  outline: 2px solid #00cc66;
+  border-radius: 12px;
+  background-color: #eafff0;
+  box-shadow: inset 0 0 5px rgba(0, 204, 102, 0.5);
+}
+
+/* ---------------------------------- */
+/* PIE DE PÁGINA */
+/* ---------------------------------- */
+
 footer {
   text-align: center;
   padding: 1rem;
   font-size: 0.9rem;
-  background-color: #f1f1f1;
+  background-color: #f3f0e8;
   margin-top: 2rem;
+  color: #333;
 }
 
-/* Responsive para celulares */
-@media (max-width: 600px) {
-  .calendar {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* ---------------------------------- */
+/* FORMULARIO */
+/* ---------------------------------- */
 
-  .day {
-    min-height: 120px;
-  }
-
-  .date {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .event {
-    font-size: 0.8rem;
-    padding: 3px 5px;
-  }
-}
-
-/* Ajustes para desktop */
-@media (min-width: 768px) {
-  .rotary-logo {
-    height: 50px;
-    width: auto;
-  }
-
-  .header-logo-titulo span {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-
-  #mes-actual {
-    margin-bottom: 0.2rem;
-  }
-
-  #consigna-mensual {
-    font-size: 1.1rem;
-  }
-}
-
-/* Formulario */
 form {
   display: flex;
   flex-direction: column;
@@ -205,18 +201,26 @@ form button:hover {
   background-color: #0056b3;
 }
 
-/* Día actual resaltado */
-.hoy {
-  outline: 2px solid #00cc66;
-  border-radius: 12px;
-  background-color: #eafff0;
-  box-shadow: inset 0 0 5px rgba(0, 204, 102, 0.5);
-}
+/* ---------------------------------- */
+/* RESPONSIVE */
+/* ---------------------------------- */
 
-.day.vacio {
-  visibility: hidden;
-  pointer-events: none;
-  border: none;
-  padding: 0;
-  margin: 0;
+@media (max-width: 600px) {
+  .calendar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .day {
+    min-height: 120px;
+  }
+
+  .date {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .event {
+    font-size: 0.8rem;
+    padding: 3px 5px;
+  }
 }
