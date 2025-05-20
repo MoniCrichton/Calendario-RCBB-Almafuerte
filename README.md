@@ -71,3 +71,5 @@ Puedes ver el calendario en funcionamiento aquí:
 ---
 
 _Gracias por apoyar el servicio comunitario de RC Bahía Blanca Almafuerte._
+
+#fffce5 (amarillo pastel) o #fdf6e3 (bei
