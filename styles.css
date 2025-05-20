@@ -1,6 +1,9 @@
 /* styles.css */
 
-/* Fondo general suave */
+/* ---------------------------------- */
+/* ESTRUCTURA GENERAL */
+/* ---------------------------------- */
+
 body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
@@ -9,7 +12,10 @@ body {
   color: #333;
 }
 
-/* Encabezado */
+/* ---------------------------------- */
+/* ENCABEZADO */
+/* ---------------------------------- */
+
 header#month-header {
   text-align: center;
   font-size: 1.8rem;
@@ -51,7 +57,25 @@ header#month-header {
   color: #f1f1f1;
 }
 
-/* Calendario */
+/* Logo Rotary */
+.rotary-logo {
+  max-height: 40px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.header-logo-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ---------------------------------- */
+/* CALENDARIO */
+/* ---------------------------------- */
+
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -117,7 +141,10 @@ header#month-header {
   box-shadow: inset 0 0 5px rgba(0, 204, 102, 0.5);
 }
 
-/* Footer */
+/* ---------------------------------- */
+/* PIE DE PÁGINA */
+/* ---------------------------------- */
+
 footer {
   text-align: center;
   padding: 1rem;
@@ -127,28 +154,10 @@ footer {
   color: #333;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .calendar {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* ---------------------------------- */
+/* FORMULARIO */
+/* ---------------------------------- */
 
-  .day {
-    min-height: 120px;
-  }
-
-  .date {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .event {
-    font-size: 0.8rem;
-    padding: 3px 5px;
-  }
-}
-
-/* Formulario */
 form {
   display: flex;
   flex-direction: column;
@@ -192,18 +201,26 @@ form button:hover {
   background-color: #0056b3;
 }
 
-/* Logo de Rotary en encabezado */
-.rotary-logo {
-  max-height: 40px;
-  margin-right: 10px;
-  vertical-align: middle;
-}
+/* ---------------------------------- */
+/* RESPONSIVE */
+/* ---------------------------------- */
 
-/* Contenedor del logo y mes */
-.header-logo-titulo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
+@media (max-width: 600px) {
+  .calendar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .day {
+    min-height: 120px;
+  }
+
+  .date {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .event {
+    font-size: 0.8rem;
+    padding: 3px 5px;
+  }
 }
