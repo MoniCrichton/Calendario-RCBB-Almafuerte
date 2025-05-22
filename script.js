@@ -138,11 +138,15 @@ function generateCalendar(year, month) {
     const dayCell = document.createElement('div');
     dayCell.classList.add('day');
 
-    const hoyStr = new Date().toISOString().split('T')[0];
-    const esHoy = hoyStr === cellDate;
-    if (esHoy) {
-      dayCell.classList.add('hoy');
-    }
+   const hoyLocal = new Date();
+const hoyStr = hoyLocal.getFullYear() + '-' +
+               String(hoyLocal.getMonth() + 1).padStart(2, '0') + '-' +
+               String(hoyLocal.getDate()).padStart(2, '0');
+
+const esHoy = hoyStr === cellDate;
+if (esHoy) {
+  dayCell.classList.add('hoy');
+}
 
     const dateLabel = document.createElement('div');
     dateLabel.classList.add('date');
