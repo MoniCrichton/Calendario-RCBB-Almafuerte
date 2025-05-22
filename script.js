@@ -9,10 +9,11 @@ let currentDate = new Date();
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Emojis")
   .then(response => response.json())
   .then(data => {
+    console.log("🔵 Datos recibidos desde Emojis:", data);
     emojis = data.reduce((acc, row) => {
-      const tipo = (row.Tipo || '').trim().toLowerCase();
-      const emoji = (row.Emoji || '').trim();
-      const color = (row.Color || '').trim();
+      const tipo = (row.tipo || '').trim().toLowerCase();
+      const emoji = (row.emoji || '').trim();
+      const color = (row.color || '').trim();
 
       if (tipo) {
         acc[tipo] = {
@@ -22,6 +23,7 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       }
       return acc;
     }, {});
+    console.log("✅ Emojis cargados:", emojis);
   });
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
@@ -100,7 +102,11 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
     });
 
     events = [...cumpleaños, ...feriados, ...procesados];
-    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+
+    setTimeout(() => {
+      console.log("🟢 Intentando generar calendario con emojis:", emojis);
+      generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+    }, 1000);
   });
 
 function cambiarMes(delta) {
@@ -176,34 +182,49 @@ function generateCalendar(year, month) {
     });
 
     dayEvents.sort((a, b) => {
-      const ordenTipo = {
-        'cumpleaños': 0,
-        'feriado': 1,
-        'reunión': 2,
-        'conferencia': 3,
-        'cena': 4,
-        'actividad membresia': 5,
-        'evento': 6,
-        'ri': 7,
-        'otro': 99
-      };
-
-      const prioridadA = ordenTipo[a.type] ?? 99;
-      const prioridadB = ordenTipo[b.type] ?? 99;
-
-      if (prioridadA !== prioridadB) return prioridadA - prioridadB;
-
       const tieneHoraA = a.time && a.time.trim() !== '';
       const tieneHoraB = b.time && b.time.trim() !== '';
 
-      if (tieneHoraA !== tieneHoraB) return tieneHoraA ? 1 : -1;
-      if (tieneHoraA && tieneHoraB) return a.time.localeCompare(b.time);
+      // ✅ Prioridad: cumpleaños y efemérides primero
+      const prioridadTipo = {
+        'cumpleaños': 0,
+        'efeméride': 1,
+        'feriado': 2,
+        'evento': 3,
+        'reunión': 4,
+        'conferencia': 5,
+        'cena': 6,
+        'actividad membresia': 7,
+        'ri': 8,
+        'otro': 99
+      };
+
+      const prioridadA = prioridadTipo[a.type] ?? 99;
+      const prioridadB = prioridadTipo[b.type] ?? 99;
+
+      // ✅ Prioridad fija por tipo solo si NO tienen hora
+      if (!tieneHoraA && !tieneHoraB && prioridadA !== prioridadB) {
+        return prioridadA - prioridadB;
+      }
+
+      // ✅ Eventos con hora van después de los que no tienen hora
+      if (tieneHoraA !== tieneHoraB) {
+        return tieneHoraA ? 1 : -1; // sin hora primero
+      }
+
+      // ✅ Si ambos tienen hora, orden por hora
+      if (tieneHoraA && tieneHoraB) {
+        return a.time.localeCompare(b.time);
+      }
+
+      // ✅ Si ambos sin hora, y misma prioridad, mantener orden
       return 0;
     });
 
     dayEvents.forEach(event => {
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
+eventEl.style.fontWeight = 'bold';
       const tipo = event.type;
       const estilo = emojis[tipo] || { emoji: '', color: '#e2e3e5' };
       const emoji = estilo.emoji;
