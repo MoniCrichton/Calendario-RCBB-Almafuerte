@@ -70,6 +70,41 @@ Puedes ver el calendario en funcionamiento aquí:
 
 ---
 
-_Gracias por apoyar el servicio comunitario de RC Bahía Blanca Almafuerte._
+## 🎨 Sistema de colores y emojis dinámicos
 
-#fffce5 (amarillo pastel) o #fdf6e3 (bei
+El calendario utiliza la hoja `Emojis` de Google Sheets para aplicar colores y emojis personalizados según el tipo de evento.
+
+### Cómo funciona:
+
+- Cada evento tiene un campo `type` que se compara con los valores en la hoja `Emojis`.
+- Si hay coincidencia, se aplican:
+  - El emoji correspondiente como prefijo del título.
+  - El color como fondo del evento.
+- Si no hay coincidencia, se usa un color gris claro (`#e2e3e5`).
+
+### Estructura de la hoja `Emojis`:
+
+| tipo                | emoji | color    |
+|---------------------|-------|----------|
+| cumpleaños          | 🎂     | `#00FA9A` |
+| reunión             | 🧑‍🤝‍🧑 | `#C1DDB3` |
+| servicio            | 👏☀️   | `#F7A81B` |
+| conferencia         | 🎤     | `#A6BDFE` |
+| deportes y valores  | 🏋️‍♀️   | `#A7D7C5` |
+| feriado             | 🏛️     | `#87CEEB` |
+| ryla                | 📌     | `#A6BDFE` |
+| ...                 | ...   | ...      |
+
+> Estos valores se pueden modificar en cualquier momento desde Google Sheets y se actualizan automáticamente al recargar la página.
+
+### Extras visuales:
+
+- Todos los eventos se muestran en **letra negrita** para mejorar la legibilidad.
+- Los eventos se ordenan dentro de cada día según la siguiente lógica:
+  1. Cumpleaños y efemérides primero.
+  2. Eventos sin hora (según prioridad del tipo).
+  3. Eventos con hora en orden cronológico.
+
+---
+
+_Gracias por apoyar el servicio comunitario de RC Bahía Blanca Almafuerte._
