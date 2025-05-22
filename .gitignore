@@ -1,0 +1,23 @@
+# Node
+node_modules/
+package-lock.json
+
+# Netlify / Lighthouse
+.unlighthouse/
+lighthouse.*
+
+# Archivos de sistema (Mac / Windows)
+.DS_Store
+Thumbs.db
+
+# Archivos temporales / backup
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Configuración de editores
+.vscode/
+
+# Archivos de entorno (por si los usás más adelante)
+.env
