@@ -12,7 +12,14 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
     emojis = data.reduce((acc, row) => {
       const tipo = (row.Tipo || '').trim().toLowerCase();
       const emoji = (row.Emoji || '').trim();
-      if (tipo && emoji) acc[tipo] = emoji;
+      const color = (row.Color || '').trim();
+
+      if (tipo) {
+        acc[tipo] = {
+          emoji: emoji,
+          color: color || '#e2e3e5'
+        };
+      }
       return acc;
     }, {});
   });
@@ -107,7 +114,7 @@ function generateCalendar(year, month) {
 
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-  const startDay = (firstDay.getDay() + 6) % 7; // lunes = 0
+  const startDay = (firstDay.getDay() + 6) % 7;
   const totalDays = lastDay.getDate();
 
   const header = document.getElementById('month-header');
@@ -138,15 +145,15 @@ function generateCalendar(year, month) {
     const dayCell = document.createElement('div');
     dayCell.classList.add('day');
 
-   const hoyLocal = new Date();
-const hoyStr = hoyLocal.getFullYear() + '-' +
-               String(hoyLocal.getMonth() + 1).padStart(2, '0') + '-' +
-               String(hoyLocal.getDate()).padStart(2, '0');
+    const hoyLocal = new Date();
+    const hoyStr = hoyLocal.getFullYear() + '-' +
+                   String(hoyLocal.getMonth() + 1).padStart(2, '0') + '-' +
+                   String(hoyLocal.getDate()).padStart(2, '0');
 
-const esHoy = hoyStr === cellDate;
-if (esHoy) {
-  dayCell.classList.add('hoy');
-}
+    const esHoy = hoyStr === cellDate;
+    if (esHoy) {
+      dayCell.classList.add('hoy');
+    }
 
     const dateLabel = document.createElement('div');
     dateLabel.classList.add('date');
@@ -184,31 +191,23 @@ if (esHoy) {
       const prioridadA = ordenTipo[a.type] ?? 99;
       const prioridadB = ordenTipo[b.type] ?? 99;
 
-      if (prioridadA !== prioridadB) {
-        return prioridadA - prioridadB;
-      }
+      if (prioridadA !== prioridadB) return prioridadA - prioridadB;
 
-      // ✅ Si son del mismo tipo, ordenar por si tienen hora (sin hora va primero)
       const tieneHoraA = a.time && a.time.trim() !== '';
       const tieneHoraB = b.time && b.time.trim() !== '';
 
-      if (tieneHoraA !== tieneHoraB) {
-        return tieneHoraA ? 1 : -1; // los sin hora primero
-      }
-
-      // ✅ Si ambos tienen hora, ordenarlos cronológicamente
-      if (tieneHoraA && tieneHoraB) {
-        return a.time.localeCompare(b.time);
-      }
-
-      return 0; // mismo tipo y sin hora
+      if (tieneHoraA !== tieneHoraB) return tieneHoraA ? 1 : -1;
+      if (tieneHoraA && tieneHoraB) return a.time.localeCompare(b.time);
+      return 0;
     });
 
     dayEvents.forEach(event => {
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
       const tipo = event.type;
-      const emoji = emojis[tipo] || '';
+      const estilo = emojis[tipo] || { emoji: '', color: '#e2e3e5' };
+      const emoji = estilo.emoji;
+      const color = estilo.color;
 
       if (tipo === 'cumpleaños') {
         let texto = `${emoji} ${event.title}`;
@@ -217,7 +216,7 @@ if (esHoy) {
           texto += ` (${edad} años)`;
         }
         eventEl.textContent = texto;
-        eventEl.style.backgroundColor = '#d1e7ff';
+        eventEl.style.backgroundColor = color;
 
       } else if (tipo === 'aniversario') {
         const yearStart = new Date(event.rawDate).getFullYear();
@@ -225,15 +224,15 @@ if (esHoy) {
         const years = currentYear - yearStart;
         eventEl.textContent = `${emoji} ${event.title} (${years} años)`;
         eventEl.style.fontWeight = 'bold';
-        eventEl.style.backgroundColor = '#ffe9a9';
+        eventEl.style.backgroundColor = color;
 
       } else if (tipo === 'feriado') {
         eventEl.textContent = `${emoji} ${event.title}`;
-        eventEl.style.backgroundColor = '#f8d7da';
+        eventEl.style.backgroundColor = color;
 
       } else {
         eventEl.textContent = `${emoji} ${event.time ? event.time + ' ' : ''}${event.title}`;
-        eventEl.style.backgroundColor = '#e2e3e5';
+        eventEl.style.backgroundColor = color;
       }
 
       dayCell.appendChild(eventEl);
@@ -242,13 +241,10 @@ if (esHoy) {
     calendar.appendChild(dayCell);
   }
 
-  // Desplazarse hasta el día actual solo en pantallas chicas
   setTimeout(() => {
     const hoy = document.querySelector('.hoy');
     if (hoy && window.innerWidth <= 600) {
       hoy.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, 100);  
+  }, 100);
 }
-
-
