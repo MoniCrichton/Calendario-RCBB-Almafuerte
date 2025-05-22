@@ -169,8 +169,39 @@ if (esHoy) {
     });
 
     dayEvents.sort((a, b) => {
-      const orden = { 'cumpleaños': 0, 'feriado': 1, 'reunión': 2, 'conferencia': 3, 'cena': 4, 'actividad membresia': 5, 'evento': 6, 'ri': 7, 'otro': 99 };
-      return (orden[a.type] || 99) - (orden[b.type] || 99);
+      const ordenTipo = {
+        'cumpleaños': 0,
+        'feriado': 1,
+        'reunión': 2,
+        'conferencia': 3,
+        'cena': 4,
+        'actividad membresia': 5,
+        'evento': 6,
+        'ri': 7,
+        'otro': 99
+      };
+
+      const prioridadA = ordenTipo[a.type] ?? 99;
+      const prioridadB = ordenTipo[b.type] ?? 99;
+
+      if (prioridadA !== prioridadB) {
+        return prioridadA - prioridadB;
+      }
+
+      // ✅ Si son del mismo tipo, ordenar por si tienen hora (sin hora va primero)
+      const tieneHoraA = a.time && a.time.trim() !== '';
+      const tieneHoraB = b.time && b.time.trim() !== '';
+
+      if (tieneHoraA !== tieneHoraB) {
+        return tieneHoraA ? 1 : -1; // los sin hora primero
+      }
+
+      // ✅ Si ambos tienen hora, ordenarlos cronológicamente
+      if (tieneHoraA && tieneHoraB) {
+        return a.time.localeCompare(b.time);
+      }
+
+      return 0; // mismo tipo y sin hora
     });
 
     dayEvents.forEach(event => {
