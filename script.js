@@ -72,7 +72,8 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         rawDate: row.Fecha || '',
         title: (row.Conmemoracion || '').trim() || 'Feriado',
         time: '',
-        type: 'feriado',
+        ttype: (row.Tipo || 'feriado').trim().toLowerCase(),
+
         repeat: 'anual',
         hasta: null,
         error: !esFechaValida,
