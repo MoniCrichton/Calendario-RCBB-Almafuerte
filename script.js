@@ -24,6 +24,8 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       return acc;
     }, {});
     console.log("✅ Emojis cargados:", emojis);
+
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
   });
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
@@ -43,7 +45,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       const fecha = new Date(row.Fecha);
       const esFechaValida = !isNaN(fecha);
       const mostrarEdad = (row.MostrarEdad || '').trim().toUpperCase() === 'S';
-
       const añoNacimiento = esFechaValida ? fecha.getFullYear() : null;
 
       return {
@@ -70,9 +71,9 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
         rawDate: row.Fecha || '',
-        title: (row.Conmemoracion || '').trim() || 'Feriado',
+        title: ((row.Tipo || '').trim().toLowerCase() === 'feriado' ? 'Feriado: ' : '') + ((row.Conmemoracion || '').trim() || 'Feriado'),
         time: '',
-        type: 'feriado',
+        type: (row.Tipo || 'feriado').trim().toLowerCase(),
         repeat: 'anual',
         hasta: null,
         error: !esFechaValida,
@@ -102,17 +103,7 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
     });
 
     events = [...cumpleaños, ...feriados, ...procesados];
-
-    setTimeout(() => {
-      console.log("🟢 Intentando generar calendario con emojis:", emojis);
-      generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-    }, 1000);
   });
-
-function cambiarMes(delta) {
-  currentDate.setMonth(currentDate.getMonth() + delta);
-  generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-}
 
 function generateCalendar(year, month) {
   const calendar = document.getElementById('calendar');
@@ -155,11 +146,8 @@ function generateCalendar(year, month) {
     const hoyStr = hoyLocal.getFullYear() + '-' +
                    String(hoyLocal.getMonth() + 1).padStart(2, '0') + '-' +
                    String(hoyLocal.getDate()).padStart(2, '0');
-
     const esHoy = hoyStr === cellDate;
-    if (esHoy) {
-      dayCell.classList.add('hoy');
-    }
+    if (esHoy) dayCell.classList.add('hoy');
 
     const dateLabel = document.createElement('div');
     dateLabel.classList.add('date');
@@ -182,80 +170,45 @@ function generateCalendar(year, month) {
     });
 
     dayEvents.sort((a, b) => {
-      const tieneHoraA = a.time && a.time.trim() !== '';
-      const tieneHoraB = b.time && b.time.trim() !== '';
-
-      // ✅ Prioridad: cumpleaños y efemérides primero
-      const prioridadTipo = {
+      const ordenTipo = {
         'cumpleaños': 0,
         'efeméride': 1,
         'feriado': 2,
         'evento': 3,
-        'reunión': 4,
-        'conferencia': 5,
-        'cena': 6,
-        'actividad membresia': 7,
-        'ri': 8,
-        'otro': 99
+        'otro': 4
       };
 
-      const prioridadA = prioridadTipo[a.type] ?? 99;
-      const prioridadB = prioridadTipo[b.type] ?? 99;
+      const prioridadA = ordenTipo[a.type] ?? 99;
+      const prioridadB = ordenTipo[b.type] ?? 99;
 
-      // ✅ Prioridad fija por tipo solo si NO tienen hora
-      if (!tieneHoraA && !tieneHoraB && prioridadA !== prioridadB) {
-        return prioridadA - prioridadB;
-      }
+      if (prioridadA !== prioridadB) return prioridadA - prioridadB;
 
-      // ✅ Eventos con hora van después de los que no tienen hora
-      if (tieneHoraA !== tieneHoraB) {
-        return tieneHoraA ? 1 : -1; // sin hora primero
-      }
+      const tieneHoraA = a.time && a.time.trim() !== '';
+      const tieneHoraB = b.time && b.time.trim() !== '';
 
-      // ✅ Si ambos tienen hora, orden por hora
-      if (tieneHoraA && tieneHoraB) {
-        return a.time.localeCompare(b.time);
-      }
-
-      // ✅ Si ambos sin hora, y misma prioridad, mantener orden
+      if (tieneHoraA !== tieneHoraB) return tieneHoraA ? 1 : -1;
+      if (tieneHoraA && tieneHoraB) return a.time.localeCompare(b.time);
       return 0;
     });
 
     dayEvents.forEach(event => {
       const eventEl = document.createElement('div');
       eventEl.classList.add('event');
-eventEl.style.fontWeight = 'bold';
       const tipo = event.type;
       const estilo = emojis[tipo] || { emoji: '', color: '#e2e3e5' };
       const emoji = estilo.emoji;
       const color = estilo.color;
 
-      if (tipo === 'cumpleaños') {
-        let texto = `${emoji} ${event.title}`;
-        if (event.mostrarEdad && typeof event.añoNacimiento === 'number') {
-          const edad = year - event.añoNacimiento;
-          texto += ` (${edad} años)`;
-        }
-        eventEl.textContent = texto;
-        eventEl.style.backgroundColor = color;
-
-      } else if (tipo === 'aniversario') {
-        const yearStart = new Date(event.rawDate).getFullYear();
-        const currentYear = dateObj.getFullYear();
-        const years = currentYear - yearStart;
-        eventEl.textContent = `${emoji} ${event.title} (${years} años)`;
-        eventEl.style.fontWeight = 'bold';
-        eventEl.style.backgroundColor = color;
-
-      } else if (tipo === 'feriado') {
-        eventEl.textContent = `${emoji} ${event.title}`;
-        eventEl.style.backgroundColor = color;
-
+      let texto = `${emoji} `;
+      if (tipo === 'cumpleaños' && event.mostrarEdad && typeof event.añoNacimiento === 'number') {
+        const edad = year - event.añoNacimiento;
+        texto += `${event.title} (${edad} años)`;
       } else {
-        eventEl.textContent = `${emoji} ${event.time ? event.time + ' ' : ''}${event.title}`;
-        eventEl.style.backgroundColor = color;
+        texto += `${event.time ? event.time + ' ' : ''}${event.title}`;
       }
 
+      eventEl.textContent = texto;
+      eventEl.style.backgroundColor = color;
       dayCell.appendChild(eventEl);
     });
 
@@ -268,4 +221,9 @@ eventEl.style.fontWeight = 'bold';
       hoy.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, 100);
+}
+
+function cambiarMes(delta) {
+  currentDate.setMonth(currentDate.getMonth() + delta);
+  generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
 }
