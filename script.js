@@ -5,6 +5,19 @@ let cumpleaños = [];
 let feriados = [];
 let emojis = {};
 let currentDate = new Date();
+let datosListos = {
+  emojis: false,
+  consignas: false,
+  cumpleaños: false,
+  feriados: false,
+  eventos: false
+};
+
+function intentarGenerarCalendario() {
+  if (Object.values(datosListos).every(v => v)) {
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+  }
+}
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Emojis")
   .then(response => response.json())
@@ -14,7 +27,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       const tipo = (row.tipo || '').trim().toLowerCase();
       const emoji = (row.emoji || '').trim();
       const color = (row.color || '').trim();
-
       if (tipo) {
         acc[tipo] = {
           emoji: emoji,
@@ -24,8 +36,8 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       return acc;
     }, {});
     console.log("✅ Emojis cargados:", emojis);
-
-    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+    datosListos.emojis = true;
+    intentarGenerarCalendario();
   });
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
@@ -36,6 +48,8 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       mes: parseInt(row.Mes),
       texto: row.Consigna
     }));
+    datosListos.consignas = true;
+    intentarGenerarCalendario();
   });
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Cumpleaños")
@@ -60,6 +74,8 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         añoNacimiento: mostrarEdad ? añoNacimiento : null
       };
     });
+    datosListos.cumpleaños = true;
+    intentarGenerarCalendario();
   });
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Feriados")
@@ -80,6 +96,8 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
         feriadoTipo: (row.Tipo || '').trim()
       };
     });
+    datosListos.feriados = true;
+    intentarGenerarCalendario();
   });
 
 fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
@@ -101,8 +119,9 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         error: !esFechaValida
       };
     });
-
     events = [...cumpleaños, ...feriados, ...procesados];
+    datosListos.eventos = true;
+    intentarGenerarCalendario();
   });
 
 function generateCalendar(year, month) {
@@ -124,7 +143,6 @@ function generateCalendar(year, month) {
         <span>${firstDay.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase()}</span>
       </div>`;
   }
-
   const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
   consignaDiv.textContent = consigna ? consigna.texto : '';
 
@@ -146,8 +164,7 @@ function generateCalendar(year, month) {
     const hoyStr = hoyLocal.getFullYear() + '-' +
                    String(hoyLocal.getMonth() + 1).padStart(2, '0') + '-' +
                    String(hoyLocal.getDate()).padStart(2, '0');
-    const esHoy = hoyStr === cellDate;
-    if (esHoy) dayCell.classList.add('hoy');
+    if (hoyStr === cellDate) dayCell.classList.add('hoy');
 
     const dateLabel = document.createElement('div');
     dateLabel.classList.add('date');
@@ -177,15 +194,11 @@ function generateCalendar(year, month) {
         'evento': 3,
         'otro': 4
       };
-
       const prioridadA = ordenTipo[a.type] ?? 99;
       const prioridadB = ordenTipo[b.type] ?? 99;
-
       if (prioridadA !== prioridadB) return prioridadA - prioridadB;
-
       const tieneHoraA = a.time && a.time.trim() !== '';
       const tieneHoraB = b.time && b.time.trim() !== '';
-
       if (tieneHoraA !== tieneHoraB) return tieneHoraA ? 1 : -1;
       if (tieneHoraA && tieneHoraB) return a.time.localeCompare(b.time);
       return 0;
@@ -206,7 +219,6 @@ function generateCalendar(year, month) {
       } else {
         texto += `${event.time ? event.time + ' ' : ''}${event.title}`;
       }
-
       eventEl.textContent = texto;
       eventEl.style.backgroundColor = color;
       dayCell.appendChild(eventEl);
