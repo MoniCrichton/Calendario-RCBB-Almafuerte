@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Test doPost</title>
+</head>
+<body>
+  <h1>Test doPost a Apps Script</h1>
+  <button onclick="enviar()">Enviar evento de prueba</button>
+
+  <script>
+    function enviar() {
+      fetch('https://script.google.com/macros/s/AKfycbyMm7Cb4gKHmVXYdPd2ZoLPkubuDwJ-DjQQcrLHgNt0x8iO2YEzaSp-Gl2as-Zloh2m_g/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          titulo: "Prueba directa",
+          fecha: "2025-05-26",
+          hora: "12:00",
+          tipo: "otro",
+          repetir: "no",
+          comentarios: "Desde archivo HTML",
+          enviadoPor: "Moni"
+        })
+      });
+      alert("✅ Enviado. Verificá tu hoja RCBB - PRUEBAS.");
+    }
+  </script>
+</body>
+</html>
