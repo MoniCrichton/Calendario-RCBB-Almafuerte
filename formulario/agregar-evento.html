@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agregar Evento</title>
+  <link rel="stylesheet" href="formulario.css">
+</head>
+<body>
+  <h1>Agregar Evento</h1>
+  <form id="eventoForm">
+    <label for="titulo">Título del evento</label>
+    <input type="text" id="titulo" name="titulo" required>
+
+    <label for="fecha">Fecha</label>
+    <input type="date" id="fecha" name="fecha" required>
+
+    <label for="hora">Hora (opcional)</label>
+    <input type="time" id="hora" name="hora">
+
+    <label for="tipo">Tipo de evento</label>
+    <select id="tipo" name="tipo" required>
+      <option value="">-- Seleccionar --</option>
+      <option value="cumpleaños">Cumpleaños</option>
+      <option value="reunión">Reunión</option>
+      <option value="servicio">Servicio</option>
+      <option value="conferencia">Conferencia</option>
+      <option value="deportes y valores">Deportes y valores</option>
+      <option value="feriado">Feriado</option>
+      <option value="efeméride">Efeméride</option>
+      <option value="ryla">RYLA</option>
+      <option value="otro">Otro</option>
+    </select>
+
+    <label for="repetir">¿Repetir?</label>
+    <select id="repetir" name="repetir">
+      <option value="">No</option>
+      <option value="anual">Anualmente</option>
+      <option value="semanal">Semanalmente</option>
+    </select>
+
+    <label for="enviadoPor">Enviado por</label>
+    <select id="enviadoPor" name="enviadoPor" required>
+      <option disabled selected>-- Seleccionar socio --</option>
+      <option value="otro">Otro (especificar)</option>
+    </select>
+    <input type="text" id="enviadoPorOtro" name="enviadoPorOtro" placeholder="Especificar nombre" style="display:none;" />
+
+    <label for="comentarios">Comentarios adicionales</label>
+    <textarea id="comentarios" name="comentarios" rows="3"></textarea>
+
+    <button type="submit">Enviar evento</button>
+    <p id="mensajeEnvio" style="text-align: center; margin-top: 1rem;"></p>
+  </form>
+
+  <script src="agregar-evento.js"></script>
+</body>
+</html>
