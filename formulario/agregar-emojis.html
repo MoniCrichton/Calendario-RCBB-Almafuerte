@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agregar Tipo de Evento con Emoji</title>
+  <link rel="stylesheet" href="./estilos/base-formulario.css" />
+  <style>
+    .emoji-sugeridos {
+      display: none;
+      margin-top: 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .emoji-sugeridos span {
+      cursor: pointer;
+      margin-right: 0.4rem;
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      display: inline-block;
+      transition: background-color 0.2s;
+    }
+
+    .emoji-sugeridos span:hover {
+      background-color: #e0e0e0;
+    }
+
+    .mostrar-emojis-btn {
+      margin-bottom: 1rem;
+      background-color: #28a745;
+    }
+
+    .mostrar-emojis-btn:hover {
+      background-color: #1e7e34;
+    }
+  </style>
+</head>
+<body>
+  <div class="formulario">
+    <h2>Agregar Tipo de Evento con Emoji</h2>
+    <form id="emojiForm">
+      <label for="tipo">Nombre del tipo de evento</label>
+      <input type="text" id="tipo" name="tipo" required />
+
+      <label for="emoji">Emoji</label>
+      <input type="text" id="emoji" name="emoji" required placeholder="Ej: 🎉" maxlength="2" />
+      <div id="emojiError" style="color: red; font-size: 0.9rem; margin-top: -0.8rem; margin-bottom: 1rem;"></div>
+
+      <button type="button" class="mostrar-emojis-btn" onclick="mostrarEmojis()">Ver ejemplos de emoji</button>
+      <div id="emojiSugeridos" class="emoji-sugeridos">
+        Haz clic para copiar:
+        <span onclick="copiarEmoji(this)">🎉</span>
+        <span onclick="copiarEmoji(this)">🎂</span>
+        <span onclick="copiarEmoji(this)">📅</span>
+        <span onclick="copiarEmoji(this)">🎁</span>
+        <span onclick="copiarEmoji(this)">💬</span>
+        <span onclick="copiarEmoji(this)">🥂</span>
+        <span onclick="copiarEmoji(this)">🧩</span>
+      </div>
+
+      <label for="color">Color</label>
+      <input type="color" id="color" name="color" value="#ffcc00" required />
+
+      <label for="explicacion">Explicación breve del significado o uso del emoji en esta categoría</label>
+      <input type="text" id="explicacion" name="explicacion" placeholder="Ej: 🎂 representa cumpleaños de socios y socias." />
+
+      <button type="submit">Enviar</button>
+      <p id="mensajeEnvio"></p>
+    </form>
+  </div>
+
+  <script src="../config.js"></script>
+  <script>
+    function mostrarEmojis() {
+      const div = document.getElementById("emojiSugeridos");
+      div.style.display = div.style.display === "none" ? "block" : "none";
+    }
+
+    function copiarEmoji(el) {
+      const emoji = el.textContent;
+      navigator.clipboard.writeText(emoji).then(() => {
+        document.getElementById("emoji").value = emoji;
+        el.style.backgroundColor = "#d4edda";
+        setTimeout(() => el.style.backgroundColor = "", 1000);
+        document.getElementById("emojiError").textContent = "";
+      });
+    }
+
+    const emojiInput = document.getElementById("emoji");
+    const emojiError = document.getElementById("emojiError");
+
+    emojiInput.addEventListener("input", () => {
+      const valor = emojiInput.value.trim();
+      if (valor.length > 2) {
+        emojiError.textContent = "⚠️ Un emoji debe tener 1 o 2 caracteres máximo.";
+      } else {
+        emojiError.textContent = "";
+      }
+    });
+
+    document.getElementById('emojiForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const mensaje = document.getElementById('mensajeEnvio');
+      mensaje.textContent = '⏳ Enviando...';
+      mensaje.style.color = 'black';
+
+      if (emojiInput.value.trim().length > 2) {
+        mensaje.textContent = '❌ Por favor ingresá solo un emoji válido.';
+        mensaje.style.color = 'red';
+        return;
+      }
+
+      const data = {
+        destino: 'emojis',
+        tipo: document.getElementById('tipo').value.trim(),
+        emoji: document.getElementById('emoji').value.trim(),
+        color: document.getElementById('color').value,
+        explicacion: document.getElementById('explicacion').value.trim()
+      };
+
+      fetch(window.ENDPOINT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => {
+          if (response.ok) {
+            mensaje.textContent = '✅ Categoría cargada correctamente.';
+            mensaje.style.color = 'green';
+            document.getElementById('emojiForm').reset();
+            document.getElementById('emojiSugeridos').style.display = 'none';
+            emojiError.textContent = '';
+          } else {
+            mensaje.textContent = '❌ Error al enviar el formulario.';
+            mensaje.style.color = 'red';
+          }
+          setTimeout(() => (mensaje.textContent = ''), 5000);
+        })
+        .catch(error => {
+          console.error('Error de red:', error);
+          mensaje.textContent = '❌ No se pudo conectar con el servidor.';
+          mensaje.style.color = 'red';
+          setTimeout(() => (mensaje.textContent = ''), 5000);
+        });
+    });
+  </script>
+</body>
+</html>

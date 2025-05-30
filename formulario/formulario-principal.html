@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formulario General – RCBB Almafuerte</title>
+  <link rel="stylesheet" href="./estilos/base-formulario.css" />
+  <style>
+    .formulario h2 {
+      margin-bottom: 2rem;
+    }
+
+    .menu-botones {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .menu-botones button {
+      font-size: 1.1rem;
+      padding: 0.9rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      background-color: #00b386;
+      color: white;
+    }
+
+    .menu-botones button:hover {
+      background-color: #00996f;
+    }
+
+    .menu-botones button:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <div class="formulario">
+    <h2>¿Qué querés agregar?</h2>
+    <div class="menu-botones">
+      <button onclick="location.href='agregar-evento.html'">🗓️ Evento general</button>
+      <button onclick="location.href='agregar-cumple.html'">🎂 Cumpleaños</button>
+      <button onclick="location.href='agregar-fechas.html'">📅 Feriado o Efeméride</button>
+      <button onclick="location.href='agregar-socios.html'">👤 Socio</button>
+      <button onclick="location.href='agregar-emojis.html'">🧩 Tipo de evento (emoji)</button>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agregar Cumpleaños</title>
+  <link rel="stylesheet" href="./estilos/base-formulario.css" />
+</head>
+<body>
+  <div class="formulario">
+    <h2>Agregar Cumpleaños</h2>
+    <form id="cumpleForm">
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" name="nombre" required />
+
+      <label for="fecha">Fecha de nacimiento:</label>
+      <input type="date" id="fecha" name="fecha" required />
+
+      <label for="tipo">Tipo:</label>
+      <select id="tipo" name="tipo">
+        <option value="Cumpleaños">Cumpleaños</option>
+        <option value="Aniversario">Aniversario</option>
+      </select>
+
+      <label for="detalles">Detalles (opcional):</label>
+      <input type="text" id="detalles" name="detalles" />
+
+      <button type="submit">Enviar</button>
+      <p id="mensajeEnvio"></p>
+    </form>
+  </div>
+
+  <script src="../config.js"></script>
+  <script>
+    document.getElementById('cumpleForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const mensaje = document.getElementById('mensajeEnvio');
+      mensaje.textContent = '⏳ Enviando...';
+      mensaje.style.color = 'black';
+
+      const data = {
+        destino: 'cumples',
+        nombre: document.getElementById('nombre').value.trim(),
+        fecha: document.getElementById('fecha').value,
+        tipo: document.getElementById('tipo').value,
+        detalles: document.getElementById('detalles').value.trim()
+      };
+
+      fetch(window.ENDPOINT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => {
+          if (response.ok) {
+            mensaje.textContent = '✅ Cumpleaños cargado correctamente.';
+            mensaje.style.color = 'green';
+            document.getElementById('cumpleForm').reset();
+          } else {
+            mensaje.textContent = '❌ Error al enviar el formulario.';
+            mensaje.style.color = 'red';
+          }
+          setTimeout(() => (mensaje.textContent = ''), 5000);
+        })
+        .catch(error => {
+          console.error('Error de red:', error);
+          mensaje.textContent = '❌ No se pudo conectar con el servidor.';
+          mensaje.style.color = 'red';
+          setTimeout(() => (mensaje.textContent = ''), 5000);
+        });
+    });
+  </script>
+</body>
+</html>

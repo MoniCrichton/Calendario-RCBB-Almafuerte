@@ -3,36 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agregar Evento</title>
+  <title>Agregar Feriado o Efeméride</title>
   <link rel="stylesheet" href="./estilos/base-formulario.css" />
 </head>
 <body>
   <div class="formulario">
-    <h2>Agregar Evento</h2>
-    <form id="eventoForm">
-      <label for="titulo">Título:</label>
-      <input type="text" id="titulo" name="titulo" required />
-
+    <h2>Agregar Feriado o Efeméride</h2>
+    <form id="fechasForm">
       <label for="fecha">Fecha:</label>
       <input type="date" id="fecha" name="fecha" required />
 
-      <label for="hora">Hora (opcional):</label>
-      <input type="time" id="hora" name="hora" />
+      <label for="conmemoracion">Conmemoración:</label>
+      <input type="text" id="conmemoracion" name="conmemoracion" required />
 
       <label for="tipo">Tipo:</label>
-      <input type="text" id="tipo" name="tipo" required />
-
-      <label for="repetir">Repetir:</label>
-      <select id="repetir" name="repetir">
-        <option value="no">No</option>
-        <option value="anual">Anual</option>
+      <select id="tipo" name="tipo">
+        <option value="Feriado">Feriado</option>
+        <option value="Efeméride">Efeméride</option>
       </select>
 
-      <label for="enviadoPor">Enviado por:</label>
-      <input type="text" id="enviadoPor" name="enviadoPor" />
-
-      <label for="comentarios">Comentarios:</label>
-      <textarea id="comentarios" name="comentarios"></textarea>
+      <label for="repetir">¿Repetir cada año?</label>
+      <select id="repetir" name="repetir">
+        <option value="Sí">Sí</option>
+        <option value="No">No</option>
+      </select>
 
       <button type="submit">Enviar</button>
       <p id="mensajeEnvio"></p>
@@ -41,41 +35,40 @@
 
   <script src="../config.js"></script>
   <script>
-    document.getElementById('eventoForm').addEventListener('submit', function (e) {
+    document.getElementById('fechasForm').addEventListener('submit', function (e) {
       e.preventDefault();
       const mensaje = document.getElementById('mensajeEnvio');
       mensaje.textContent = '⏳ Enviando...';
       mensaje.style.color = 'black';
 
       const data = {
-        destino: 'evento',
-        titulo: document.getElementById('titulo').value.trim(),
+        destino: 'feriados',
         fecha: document.getElementById('fecha').value,
-        hora: document.getElementById('hora').value,
+        conmemoracion: document.getElementById('conmemoracion').value.trim(),
         tipo: document.getElementById('tipo').value,
-        repetir: document.getElementById('repetir').value,
-        enviadoPor: document.getElementById('enviadoPor').value,
-        comentarios: document.getElementById('comentarios').value.trim()
+        repetir: document.getElementById('repetir').value
       };
 
       fetch(window.ENDPOINT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(data)
       })
         .then(response => {
           if (response.ok) {
-            mensaje.textContent = '✅ Evento enviado correctamente.';
+            mensaje.textContent = '✅ Fecha cargada correctamente.';
             mensaje.style.color = 'green';
-            document.getElementById('eventoForm').reset();
+            document.getElementById('fechasForm').reset();
           } else {
-            mensaje.textContent = '❌ Error al enviar el evento.';
+            mensaje.textContent = '❌ Error al enviar el formulario.';
             mensaje.style.color = 'red';
           }
           setTimeout(() => (mensaje.textContent = ''), 5000);
         })
         .catch(error => {
-          console.error('Error:', error);
+          console.error('Error de red:', error);
           mensaje.textContent = '❌ No se pudo conectar con el servidor.';
           mensaje.style.color = 'red';
           setTimeout(() => (mensaje.textContent = ''), 5000);
