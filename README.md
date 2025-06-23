@@ -125,4 +125,14 @@ El calendario utiliza la hoja `Emojis` de Google Sheets para aplicar estilos a l
 
 ---
 
+### Licencia
+
+Este sistema fue creado por Mónica Crichton (Moni) para Rotary Club Bahía Blanca Almafuerte,  
+inspirado en los valores de Rotary International.
+
+Se encuentra bajo licencia [Creative Commons Reconocimiento-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es).  
+Esto significa que podés copiarlo, adaptarlo y compartirlo con atribución, sin fines comerciales,  
+y cualquier derivado debe llevar la misma licencia.
+
+
 _Gracias por apoyar el servicio comunitario de RC Bahía Blanca Almafuerte._
