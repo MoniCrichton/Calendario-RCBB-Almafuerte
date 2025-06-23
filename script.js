@@ -107,7 +107,10 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
       const fecha = new Date(row.Fecha);
       const hasta = row.Hasta ? new Date(row.Hasta) : null;
       const esFechaValida = !isNaN(fecha);
-      const mostrar = (row.Mostrar || '').trim().toUpperCase() !== 'NO';
+      const mostrar = Object.keys(row).some(key => key.trim().toUpperCase() === 'MOSTRAR') 
+  ? (row[Object.keys(row).find(key => key.trim().toUpperCase() === 'MOSTRAR')] || '').trim().toUpperCase() !== 'NO'
+  : true;
+
 
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
