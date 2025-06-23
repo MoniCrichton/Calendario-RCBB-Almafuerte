@@ -107,6 +107,7 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
       const fecha = new Date(row.Fecha);
       const hasta = row.Hasta ? new Date(row.Hasta) : null;
       const esFechaValida = !isNaN(fecha);
+      const mostrar = (row.Mostrar || '').trim().toUpperCase() !== 'NO';
 
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
@@ -116,10 +117,12 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         type: (row.Tipo || 'otro').trim().toLowerCase(),
         repeat: (row.Repetir || '').trim().toLowerCase(),
         hasta: hasta,
-        error: !esFechaValida
+        error: !esFechaValida,
+        mostrar: mostrar
       };
     });
-    events = [...cumpleaños, ...feriados, ...procesados];
+    const visibles = procesados.filter(e => e.mostrar !== false);
+    events = [...cumpleaños, ...feriados, ...visibles];
     datosListos.eventos = true;
     intentarGenerarCalendario();
   });
