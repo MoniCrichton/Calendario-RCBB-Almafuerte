@@ -13,6 +13,11 @@ let datosListos = {
   eventos: false
 };
 
+function obtenerGrupoDesdeURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("grupo")?.toLowerCase() || "todos";
+}
+
 function intentarGenerarCalendario() {
   if (Object.values(datosListos).every(v => v)) {
     generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
@@ -124,8 +129,24 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         mostrar: mostrar
       };
     });
-    const visibles = procesados.filter(e => e.mostrar !== false);
-    events = [...cumpleaños, ...feriados, ...visibles];
+    const grupo = obtenerGrupoDesdeURL();
+
+    const visibles = procesados.filter(e => {
+    // si mostrar no existe, se ignora el evento
+    if (!e.mostrar) return false;
+
+    // Si el grupo es "ver_todo" o similar, no filtra nada
+    if (grupo === 'ver_todo') return true;
+
+    // si mostrar es una lista separada por comas, la convertimos
+    const gruposPermitidos = String(e.mostrar).toLowerCase().split(',').map(g => g.trim());
+
+    // se muestra si dice "todos" o si incluye el grupo actual
+    return gruposPermitidos.includes("todos") || gruposPermitidos.includes(grupo);
+  });
+
+events = [...cumpleaños, ...feriados, ...visibles];
+
     datosListos.eventos = true;
     intentarGenerarCalendario();
   });

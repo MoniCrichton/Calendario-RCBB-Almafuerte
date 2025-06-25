@@ -134,4 +134,5 @@ Se encuentra bajo licencia [Creative Commons Reconocimiento-NoComercial-Comparti
 Esto significa que podés copiarlo, adaptarlo y compartirlo con atribución, sin fines comerciales,  
 y cualquier derivado debe llevar la misma licencia.
 
+
 _Gracias por apoyar el servicio comunitario de RC Bahía Blanca Almafuerte._
