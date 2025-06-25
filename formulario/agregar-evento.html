@@ -20,12 +20,18 @@
       <input type="time" id="hora" name="hora" />
 
       <label for="tipo">Tipo:</label>
-      <input type="text" id="tipo" name="tipo" required />
+      <select id="tipo" name="tipo" required></select>
 
       <label for="repetir">Repetir:</label>
       <select id="repetir" name="repetir">
         <option value="no">No</option>
         <option value="anual">Anual</option>
+      </select>
+
+      <label for="mostrar">Mostrar a:</label>
+      <select id="mostrar" name="mostrar">
+        <option value="todos">Todos</option>
+        <option value="junta">Junta</option>
       </select>
 
       <label for="enviadoPor">Enviado por:</label>
@@ -41,6 +47,25 @@
 
   <script src="../config.js"></script>
   <script>
+    // Cargar tipos dinámicamente desde hoja Emojis
+    fetch(window.ENDPOINT_URL)
+      .then(res => res.json())
+      .then(data => {
+        const tipos = data.tipos || [];
+        const tipoSelect = document.getElementById("tipo");
+
+        tipos.forEach(({ tipo, emoji }) => {
+          const option = document.createElement("option");
+          option.value = tipo;
+          option.textContent = `${emoji || ''} ${tipo}`;
+          tipoSelect.appendChild(option);
+        });
+      })
+      .catch(error => {
+        console.error("Error al cargar tipos:", error);
+      });
+
+    // Enviar el formulario
     document.getElementById('eventoForm').addEventListener('submit', function (e) {
       e.preventDefault();
       const mensaje = document.getElementById('mensajeEnvio');
@@ -48,12 +73,12 @@
       mensaje.style.color = 'black';
 
       const data = {
-        destino: 'evento',
         titulo: document.getElementById('titulo').value.trim(),
         fecha: document.getElementById('fecha').value,
         hora: document.getElementById('hora').value,
         tipo: document.getElementById('tipo').value,
         repetir: document.getElementById('repetir').value,
+        mostrar: document.getElementById('mostrar').value,
         enviadoPor: document.getElementById('enviadoPor').value,
         comentarios: document.getElementById('comentarios').value.trim()
       };
