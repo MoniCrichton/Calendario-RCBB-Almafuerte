@@ -27,7 +27,6 @@ function intentarGenerarCalendario() {
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Emojis")
   .then(response => response.json())
   .then(data => {
-    console.log("🔵 Datos recibidos desde Emojis:", data);
     emojis = data.reduce((acc, row) => {
       const tipo = (row.tipo || '').trim().toLowerCase();
       const emoji = (row.emoji || '').trim();
@@ -40,7 +39,6 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
       }
       return acc;
     }, {});
-    console.log("✅ Emojis cargados:", emojis);
     datosListos.emojis = true;
     intentarGenerarCalendario();
   });
@@ -108,14 +106,15 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
 fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
   .then(res => res.json())
   .then(data => {
+    const grupo = obtenerGrupoDesdeURL();
     const procesados = data.map(row => {
       const fecha = new Date(row.Fecha);
       const hasta = row.Hasta ? new Date(row.Hasta) : null;
       const esFechaValida = !isNaN(fecha);
-      const mostrar = Object.keys(row).some(key => key.trim().toUpperCase() === 'MOSTRAR') 
-  ? (row[Object.keys(row).find(key => key.trim().toUpperCase() === 'MOSTRAR')] || '').trim().toUpperCase() !== 'NO'
-  : true;
 
+      const mostrarKey = Object.keys(row).find(key => key.trim().toUpperCase() === 'MOSTRAR');
+      const mostrarRaw = mostrarKey ? row[mostrarKey].trim() : '';
+      const mostrar = mostrarRaw.toUpperCase() !== 'NO';
 
       return {
         date: esFechaValida ? fecha.toISOString().split('T')[0] : null,
@@ -126,27 +125,19 @@ fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMh
         repeat: (row.Repetir || '').trim().toLowerCase(),
         hasta: hasta,
         error: !esFechaValida,
-        mostrar: mostrar
+        mostrar: mostrar,
+        mostrarGrupo: mostrarRaw
       };
     });
-    const grupo = obtenerGrupoDesdeURL();
 
     const visibles = procesados.filter(e => {
-    // si mostrar no existe, se ignora el evento
-    if (!e.mostrar) return false;
+      if (!e.mostrar) return false;
+      if (grupo === 'ver_todo') return true;
+      const gruposPermitidos = String(e.mostrarGrupo || '').toLowerCase().split(',').map(g => g.trim());
+      return gruposPermitidos.includes("todos") || gruposPermitidos.includes(grupo);
+    });
 
-    // Si el grupo es "ver_todo" o similar, no filtra nada
-    if (grupo === 'ver_todo') return true;
-
-    // si mostrar es una lista separada por comas, la convertimos
-    const gruposPermitidos = String(e.mostrar).toLowerCase().split(',').map(g => g.trim());
-
-    // se muestra si dice "todos" o si incluye el grupo actual
-    return gruposPermitidos.includes("todos") || gruposPermitidos.includes(grupo);
-  });
-
-events = [...cumpleaños, ...feriados, ...visibles];
-
+    events = [...cumpleaños, ...feriados, ...visibles];
     datosListos.eventos = true;
     intentarGenerarCalendario();
   });
