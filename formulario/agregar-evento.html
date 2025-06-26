@@ -48,7 +48,8 @@
   <script src="../config.js"></script>
   <script>
     // Cargar tipos dinámicamente desde hoja Emojis
-    fetch(window.ENDPOINT_URL)
+    fetch('/api/obtenerTipos')
+
       .then(res => res.json())
       .then(data => {
         const tipos = data.tipos || [];
@@ -82,12 +83,12 @@
         enviadoPor: document.getElementById('enviadoPor').value,
         comentarios: document.getElementById('comentarios').value.trim()
       };
-
-      fetch(window.ENDPOINT_URL, {
+      fetch('/api/enviarEvento', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
-      })
+    })
+
         .then(response => {
           if (response.ok) {
             mensaje.textContent = '✅ Evento enviado correctamente.';
