@@ -55,7 +55,7 @@
         const tipos = data.tipos || [];
         const tipoSelect = document.getElementById("tipo");
 
-        tipos.forEach(({ tipo, emoji }) => {
+        tipos.forEach(({ Tipo, Emoji }) => {
           const option = document.createElement("option");
           option.value = tipo;
           option.textContent = `${emoji || ''} ${tipo}`;
