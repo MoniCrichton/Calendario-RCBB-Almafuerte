@@ -20,7 +20,9 @@
       <input type="time" id="hora" name="hora" />
 
       <label for="tipo">Tipo:</label>
-      <select id="tipo" name="tipo" required></select>
+      <select id="tipo" name="tipo" required>
+        <option value="">Seleccionar tipo...</option>
+      </select>
 
       <label for="repetir">Repetir:</label>
       <select id="repetir" name="repetir">
@@ -31,11 +33,14 @@
       <label for="mostrar">Mostrar a:</label>
       <select id="mostrar" name="mostrar">
         <option value="todos">Todos</option>
-        <option value="junta">Junta (mas Todos)</option>
+        <option value="junta">Junta</option>
       </select>
 
-      <label for="enviadoPor">Enviado por:</label>
-      <input type="text" id="enviadoPor" name="enviadoPor" />
+      <label for="enviadoPorSelect">Enviado por:</label>
+      <select id="enviadoPorSelect" name="enviadoPor">
+        <option value="">Seleccionar...</option>
+      </select>
+      <input type="text" id="enviadoPorInput" placeholder="Especificar nombre..." style="display: none; margin-top: 8px;" />
 
       <label for="comentarios">Comentarios:</label>
       <textarea id="comentarios" name="comentarios"></textarea>
@@ -47,35 +52,54 @@
 
   <script src="../config.js"></script>
   <script>
-    // Cargar tipos dinámicamente desde hoja Emojis
+    // Cargar tipos dinámicamente
     fetch('/api/obtenerTipos')
-  .then(res => res.json())
-  .then(data => {
-    const tipos = data.tipos || [];
-    const tipoSelect = document.getElementById("tipo");
+      .then(res => res.json())
+      .then(data => {
+        const tipos = data.tipos || [];
+        const tipoSelect = document.getElementById("tipo");
 
-    // 👉 Agregamos primero la opción por defecto
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.disabled = true;
-    defaultOption.selected = true;
-    defaultOption.textContent = "Seleccionar tipo...";
-    tipoSelect.appendChild(defaultOption);
+        tipos.forEach(({ tipo, emoji }) => {
+          const option = document.createElement("option");
+          option.value = tipo;
+          option.textContent = `${emoji || ''} ${tipo}`;
+          tipoSelect.appendChild(option);
+        });
+      })
+      .catch(error => {
+        console.error("Error al cargar tipos:", error);
+      });
 
-    // Luego las opciones reales
-    tipos.forEach(({ tipo, emoji }) => {
-      const option = document.createElement("option");
-      option.value = tipo;
-      option.textContent = `${emoji || ''} ${tipo}`;
-      tipoSelect.appendChild(option);
+    // Cargar socios desde hoja Socios
+    fetch('/api/obtenerSocios')
+      .then(res => res.json())
+      .then(data => {
+        const socios = data.socios || [];
+        const select = document.getElementById("enviadoPorSelect");
+
+        socios.forEach(nombre => {
+          const option = document.createElement("option");
+          option.value = nombre;
+          option.textContent = nombre;
+          select.appendChild(option);
+        });
+
+        const otro = document.createElement("option");
+        otro.value = "__otro__";
+        otro.textContent = "Otra persona...";
+        select.appendChild(otro);
+      })
+      .catch(error => {
+        console.error("Error al cargar socios:", error);
+      });
+
+    // Mostrar campo de texto si se elige "Otra persona..."
+    document.getElementById("enviadoPorSelect").addEventListener("change", function () {
+      const input = document.getElementById("enviadoPorInput");
+      input.style.display = this.value === "__otro__" ? "block" : "none";
     });
-  })
-  .catch(error => {
-    console.error("Error al cargar tipos:", error);
-  });
 
-
-    // Enviar el formulario
+    // Enviar formulario
     document.getElementById('eventoForm').addEventListener('submit', function (e) {
       e.preventDefault();
       const mensaje = document.getElementById('mensajeEnvio');
@@ -89,20 +113,26 @@
         tipo: document.getElementById('tipo').value,
         repetir: document.getElementById('repetir').value,
         mostrar: document.getElementById('mostrar').value,
-        enviadoPor: document.getElementById('enviadoPor').value,
+        enviadoPor: (() => {
+          const select = document.getElementById('enviadoPorSelect');
+          const input = document.getElementById('enviadoPorInput');
+          return select.value === '__otro__' ? input.value.trim() : select.value;
+        })(),
         comentarios: document.getElementById('comentarios').value.trim()
       };
+
       fetch('/api/enviarEvento', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
-    })
-
+      })
         .then(response => {
           if (response.ok) {
             mensaje.textContent = '✅ Evento enviado correctamente.';
             mensaje.style.color = 'green';
             document.getElementById('eventoForm').reset();
+            document.getElementById('enviadoPorInput').value = '';
+            document.getElementById('enviadoPorInput').style.display = 'none';
           } else {
             mensaje.textContent = '❌ Error al enviar el evento.';
             mensaje.style.color = 'red';
