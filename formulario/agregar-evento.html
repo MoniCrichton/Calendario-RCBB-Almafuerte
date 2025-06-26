@@ -49,22 +49,31 @@
   <script>
     // Cargar tipos dinámicamente desde hoja Emojis
     fetch('/api/obtenerTipos')
+  .then(res => res.json())
+  .then(data => {
+    const tipos = data.tipos || [];
+    const tipoSelect = document.getElementById("tipo");
 
-      .then(res => res.json())
-      .then(data => {
-        const tipos = data.tipos || [];
-        const tipoSelect = document.getElementById("tipo");
+    // 👉 Agregamos primero la opción por defecto
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    defaultOption.textContent = "Seleccionar tipo...";
+    tipoSelect.appendChild(defaultOption);
 
-        tipos.forEach(({ tipo, emoji }) => {
-          const option = document.createElement("option");
-          option.value = tipo;
-          option.textContent = `${emoji || ''} ${tipo}`;
-          tipoSelect.appendChild(option);
-        });
-      })
-      .catch(error => {
-        console.error("Error al cargar tipos:", error);
-      });
+    // Luego las opciones reales
+    tipos.forEach(({ tipo, emoji }) => {
+      const option = document.createElement("option");
+      option.value = tipo;
+      option.textContent = `${emoji || ''} ${tipo}`;
+      tipoSelect.appendChild(option);
+    });
+  })
+  .catch(error => {
+    console.error("Error al cargar tipos:", error);
+  });
+
 
     // Enviar el formulario
     document.getElementById('eventoForm').addEventListener('submit', function (e) {
