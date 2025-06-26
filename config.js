@@ -1,7 +1,6 @@
 const config = {
-  endpoint: 'https://script.google.com/macros/s/AKfycbxSmznIzr2ZtC_m1kH4TrLWbAg6oDaJy_wyRpm1urnY-dvpvRmJfZN646iyRGLJaXzybw/exec'
+  endpoint: 'https://script.google.com/macros/s/AKfycbwUfUOsRXavh1G_rPeu-8jXmgoTOAp7KW43uX0jIjZlUFvTYivMz5gH5lPUhV_l1Y6JGA/exec'
 };
 
 export default config;
-
 
