@@ -19,5 +19,5 @@ const SHEET_BASE = `https://opensheet.vercel.app/${sheetID}`;
 window.ENDPOINT_URL = isDev ? devScriptURL : prodScriptURL;
 window.URL_EMOJIS = `${SHEET_BASE}/Emojis`;
 window.URL_CONSIGNAS = `${SHEET_BASE}/Consignas`;
-window.URL_CUMPLES = `${SHEET_BASE}/Cumpleaños`;
+window.URL_CUMPLES = `${SHEET_BASE}/Cumples`;
 window.URL_FERIADOS = `${SHEET_BASE}/Feriados`;
