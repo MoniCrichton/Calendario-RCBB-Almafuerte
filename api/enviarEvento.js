@@ -1,10 +1,18 @@
+// /pages/api/enviarEventos.js
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Sólo se permiten solicitudes POST' });
   }
 
   try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbwUfUOsRXavh1G_rPeu-8jXmgoTOAp7KW43uX0jIjZlUFvTYivMz5gH5lPUhV_l1Y6JGA/exec', {
+    const scriptUrl = process.env.NEXT_PUBLIC_SCRIPT_URL;
+
+    if (!scriptUrl) {
+      return res.status(500).json({ error: 'La URL del Apps Script no está definida en las variables de entorno' });
+    }
+
+    const response = await fetch(scriptUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -14,6 +22,7 @@ export default async function handler(req, res) {
 
     const texto = await response.text();
     res.status(200).json({ mensaje: texto });
+
   } catch (error) {
     console.error('Error al reenviar al Apps Script:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
