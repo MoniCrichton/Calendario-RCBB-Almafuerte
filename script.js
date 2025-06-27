@@ -44,7 +44,7 @@ fetch(`${window.ENDPOINT_URL}?ruta=obtenerTipos`)
   })
   .catch(() => datosListos.emojis = true);
 
-fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
+fetch(window.URL_CONSIGNAS)
   .then(res => res.json())
   .then(data => {
     consignas = data.map(row => ({
@@ -56,7 +56,7 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
     intentarGenerarCalendario();
   });
 
-fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Cumpleaños")
+fetch(window.URL_CUMPLES)
   .then(res => res.json())
   .then(data => {
     cumpleaños = data.map(row => {
@@ -82,7 +82,7 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
     intentarGenerarCalendario();
   });
 
-fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Feriados")
+fetch(window.URL_FERIADOS)
   .then(res => res.json())
   .then(data => {
     feriados = data.map(row => {
@@ -130,6 +130,7 @@ fetch(`${window.ENDPOINT_URL}`)
         mostrarGrupo: mostrarRaw
       };
     });
+console.log("Usando hoja:", window.URL_CONSIGNAS);
 
     const visibles = procesados.filter(e => {
       if (!e.mostrar) return false;
