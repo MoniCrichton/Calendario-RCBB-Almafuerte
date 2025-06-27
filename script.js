@@ -24,10 +24,10 @@ function intentarGenerarCalendario() {
   }
 }
 
-fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Emojis")
-  .then(response => response.json())
+fetch(`${window.ENDPOINT_URL}?ruta=obtenerTipos`)
+  .then(res => res.json())
   .then(data => {
-    emojis = data.reduce((acc, row) => {
+    emojis = data.tipos.reduce((acc, row) => {
       const tipo = (row.tipo || '').trim().toLowerCase();
       const emoji = (row.emoji || '').trim();
       const color = (row.color || '').trim();
@@ -41,7 +41,8 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
     }, {});
     datosListos.emojis = true;
     intentarGenerarCalendario();
-  });
+  })
+  .catch(() => datosListos.emojis = true);
 
 fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4/Consignas")
   .then(res => res.json())
@@ -103,11 +104,11 @@ fetch("https://opensheet.vercel.app/1S7ZFwciFjQ11oScRN9cA9xVVtuZUR-HWmMVO3HWAkg4
     intentarGenerarCalendario();
   });
 
-fetch("https://script.google.com/macros/s/AKfycbzenkAI7Y6OfySx10hnpkaHfgXLshZYMhTt3L84SAmS5hr3UXBcvDZewPOD-donpORP/exec")
+fetch(`${window.ENDPOINT_URL}`)
   .then(res => res.json())
   .then(data => {
     const grupo = obtenerGrupoDesdeURL();
-    const procesados = data.map(row => {
+    const procesados = data.eventos.map(row => {
       const fecha = new Date(row.Fecha);
       const hasta = row.Hasta ? new Date(row.Hasta) : null;
       const esFechaValida = !isNaN(fecha);
