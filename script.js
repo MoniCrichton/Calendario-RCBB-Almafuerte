@@ -31,10 +31,13 @@ fetch(`${window.ENDPOINT_URL}?ruta=obtenerTipos`)
       const tipo = (row.tipo || '').trim().toLowerCase();
       const emoji = (row.emoji || '').trim();
       const color = (row.color || '').trim();
+      const explicacion = (row.explicacion || '').trim(); // 👈 esto
+
       if (tipo) {
         acc[tipo] = {
           emoji: emoji,
-          color: color || '#e2e3e5'
+          color: color || '#e2e3e5',
+          explicacion // 👈 y esto
         };
       }
       return acc;
@@ -241,6 +244,7 @@ function generateCalendar(year, month) {
       }
       eventEl.textContent = texto;
       eventEl.style.backgroundColor = color;
+      eventEl.title = estilo.explicacion || event.title;
       dayCell.appendChild(eventEl);
     });
 

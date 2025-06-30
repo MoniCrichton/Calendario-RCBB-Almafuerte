@@ -121,7 +121,7 @@
         comentarios: document.getElementById('comentarios').value.trim()
       };
 
-      fetch('/api/enviarEvento', {
+      fetch(window.ENDPOINT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)

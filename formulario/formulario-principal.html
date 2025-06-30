@@ -5,36 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Formulario General – RCBB Almafuerte</title>
   <link rel="stylesheet" href="./estilos/base-formulario.css" />
-  <style>
-    .formulario h2 {
-      margin-bottom: 2rem;
-    }
+  <<link rel="stylesheet" href="./estilos/menu-formulario.css" />
 
-    .menu-botones {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .menu-botones button {
-      font-size: 1.1rem;
-      padding: 0.9rem;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      background-color: #00b386;
-      color: white;
-    }
-
-    .menu-botones button:hover {
-      background-color: #00996f;
-    }
-
-    .menu-botones button:active {
-      transform: scale(0.98);
-    }
-  </style>
 </head>
 <body>
   <div class="formulario">
@@ -45,7 +17,18 @@
       <button onclick="location.href='agregar-fechas.html'">📅 Feriado o Efeméride</button>
       <button onclick="location.href='agregar-socios.html'">👤 Socio</button>
       <button onclick="location.href='agregar-emojis.html'">🧩 Tipo de evento (emoji)</button>
+      <button onclick="irAlCalendario()">📆 Ver Calendario</button>
     </div>
   </div>
+
+  <script>
+    function irAlCalendario() {
+      if (window.location.hostname.includes("vercel.app") || window.location.pathname === "/formulario/index.html") {
+        location.href = "/index.html";
+      } else {
+        location.href = "../index.html";
+      }
+    }
+  </script>
 </body>
 </html>

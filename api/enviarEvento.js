@@ -21,7 +21,9 @@ export default async function handler(req, res) {
     });
 
     const texto = await response.text();
-    res.status(200).json({ mensaje: texto });
+    const resultado = JSON.parse(texto);
+    res.status(200).json(resultado);
+
 
   } catch (error) {
     console.error('Error al reenviar al Apps Script:', error);

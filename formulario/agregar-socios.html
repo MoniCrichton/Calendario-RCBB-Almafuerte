@@ -17,7 +17,7 @@
       <input type="text" id="nombre" name="nombre" required />
 
       <label for="numero">N° de Socio Rotary:</label>
-      <input type="number" id="numero" name="numero" required />
+      <input type="number" id="numero" name="numero" required min="1" />
 
       <label for="categoria">Categoría:</label>
       <select id="categoria" name="categoria" required>
@@ -47,6 +47,13 @@
         numero: document.getElementById('numero').value,
         categoria: document.getElementById('categoria').value
       };
+
+      const numeroSocio = Number(data.numero);
+      if (isNaN(numeroSocio) || numeroSocio <= 0) {
+        mensaje.textContent = '❌ El número debe ser mayor a 0.';
+        mensaje.style.color = 'red';
+        return;
+      }
 
       fetch(window.ENDPOINT_URL, {
         method: 'POST',

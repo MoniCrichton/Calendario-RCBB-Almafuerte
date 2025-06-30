@@ -69,9 +69,13 @@
     </form>
   </div>
 
+
+ 
   <script src="../config.js"></script>
   <script>
-    function mostrarEmojis() {
+   console.log("Usando endpoint:", window.ENDPOINT_URL);
+
+  function mostrarEmojis() {
       const div = document.getElementById("emojiSugeridos");
       div.style.display = div.style.display === "none" ? "block" : "none";
     }
