@@ -67,7 +67,7 @@ fetch(window.URL_CONSIGNAS)
     intentarGenerarCalendario();
   });
 
-fetch(`${window.ENDPOINT_URL}`)
+fetch(window.URL_CUMPLES)
   .then(res => res.json())
   .then(data => {
     cumpleaños = data.map(row => {
