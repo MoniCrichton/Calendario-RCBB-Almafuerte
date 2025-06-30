@@ -59,7 +59,7 @@ fetch(window.URL_CONSIGNAS)
     intentarGenerarCalendario();
   });
 
-fetch(window.URL_CUMPLES)
+fetch(`${window.ENDPOINT_URL}`)
   .then(res => res.json())
   .then(data => {
     cumpleaños = data.map(row => {
@@ -110,6 +110,7 @@ fetch(window.URL_FERIADOS)
 fetch(`${window.ENDPOINT_URL}`)
   .then(res => res.json())
   .then(data => {
+    console.log("🔎 DATA RECIBIDA DESDE ENDPOINT_URL:", data); // 👈 agregá esto
     const grupo = obtenerGrupoDesdeURL();
     const procesados = data.eventos.map(row => {
       const fecha = new Date(row.Fecha);
