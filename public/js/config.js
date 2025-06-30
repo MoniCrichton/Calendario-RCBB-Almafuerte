@@ -1,7 +1,7 @@
 // config.js
 
-// Detectar entorno
-const isDev = window.location.hostname.includes("dev");
+// Detectar entorno de desarrollo de forma más confiable
+const isDev = window.location.href.includes("-dev");
 
 // Apps Script para formularios
 const devScriptURL = "https://script.google.com/macros/s/AKfycbwUfUOsRXavh1G_rPeu-8jXmgoTOAp7KW43uX0jIjZlUFvTYivMz5gH5lPUhV_l1Y6JGA/exec";
@@ -21,3 +21,6 @@ window.URL_EMOJIS = `${SHEET_BASE}/Emojis`;
 window.URL_CONSIGNAS = `${SHEET_BASE}/Consignas`;
 window.URL_CUMPLES = `${SHEET_BASE}/Cumples`;
 window.URL_FERIADOS = `${SHEET_BASE}/Feriados`;
+
+console.log("🌎 Modo:", isDev ? "DEV" : "PRODUCCIÓN");
+console.log("📄 Usando hoja:", window.URL_CONSIGNAS);
