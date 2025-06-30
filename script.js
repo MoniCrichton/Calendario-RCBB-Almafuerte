@@ -112,7 +112,7 @@ fetch(`${window.ENDPOINT_URL}`)
   .then(data => {
     console.log("🔎 DATA RECIBIDA DESDE ENDPOINT_URL:", data); // 👈 agregá esto
     const grupo = obtenerGrupoDesdeURL();
-    const procesados = data.eventos.map(row => {
+    const procesados = data.map(row => {
       const fecha = new Date(row.Fecha);
       const hasta = row.Hasta ? new Date(row.Hasta) : null;
       const esFechaValida = !isNaN(fecha);
