@@ -167,3 +167,20 @@ fetch(`${window.ENDPOINT_URL}`)
     datosListos.eventos = true;
     intentarGenerarCalendario();
   });
+
+function generateCalendar(year, month) {
+  // función original que renderiza el calendario
+  // Moni ya la tiene completa, y debería copiarla directamente donde estaba
+  console.log("✅ generateCalendar ejecutado con", year, month);
+}
+
+function cambiarMes(delta) {
+  currentDate.setMonth(currentDate.getMonth() + delta);
+  generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("✅ Service Worker registrado"))
+    .catch(err => console.error("❌ Error al registrar el SW", err));
+}
