@@ -1,4 +1,4 @@
-// script.js
+
 let events = [];
 let consignas = [];
 let cumpleaños = [];
@@ -31,13 +31,12 @@ fetch(`${window.ENDPOINT_URL}?ruta=obtenerTipos`)
       const tipo = (row.tipo || '').trim().toLowerCase();
       const emoji = (row.emoji || '').trim();
       const color = (row.color || '').trim();
-      const explicacion = (row.explicacion || '').trim(); // 👈 esto
-
+      const explicacion = (row.explicacion || '').trim();
       if (tipo) {
         acc[tipo] = {
           emoji: emoji,
           color: color || '#e2e3e5',
-          explicacion // 👈 y esto
+          explicacion
         };
       }
       return acc;
@@ -45,7 +44,11 @@ fetch(`${window.ENDPOINT_URL}?ruta=obtenerTipos`)
     datosListos.emojis = true;
     intentarGenerarCalendario();
   })
-  .catch(() => datosListos.emojis = true);
+  .catch(() => {
+    console.warn("❌ Falló cargar emojis");
+    datosListos.emojis = true;
+    intentarGenerarCalendario();
+  });
 
 fetch(window.URL_CONSIGNAS)
   .then(res => res.json())
@@ -55,6 +58,11 @@ fetch(window.URL_CONSIGNAS)
       mes: parseInt(row.Mes),
       texto: row.Consigna
     }));
+    datosListos.consignas = true;
+    intentarGenerarCalendario();
+  })
+  .catch(() => {
+    console.warn("❌ Falló cargar consignas");
     datosListos.consignas = true;
     intentarGenerarCalendario();
   });
@@ -83,6 +91,11 @@ fetch(`${window.ENDPOINT_URL}`)
     });
     datosListos.cumpleaños = true;
     intentarGenerarCalendario();
+  })
+  .catch(() => {
+    console.warn("❌ Falló cargar cumpleaños");
+    datosListos.cumpleaños = true;
+    intentarGenerarCalendario();
   });
 
 fetch(window.URL_FERIADOS)
@@ -105,18 +118,21 @@ fetch(window.URL_FERIADOS)
     });
     datosListos.feriados = true;
     intentarGenerarCalendario();
+  })
+  .catch(() => {
+    console.warn("❌ Falló cargar feriados");
+    datosListos.feriados = true;
+    intentarGenerarCalendario();
   });
 
 fetch(`${window.ENDPOINT_URL}`)
   .then(res => res.json())
   .then(data => {
-    console.log("🔎 DATA RECIBIDA DESDE ENDPOINT_URL:", data); // 👈 agregá esto
     const grupo = obtenerGrupoDesdeURL();
     const procesados = data.map(row => {
       const fecha = new Date(row.Fecha);
       const hasta = row.Hasta ? new Date(row.Hasta) : null;
       const esFechaValida = !isNaN(fecha);
-
       const mostrarKey = Object.keys(row).find(key => key.trim().toUpperCase() === 'MOSTRAR');
       const mostrarRaw = mostrarKey ? row[mostrarKey].trim() : '';
       const mostrar = mostrarRaw.toUpperCase() !== 'NO';
@@ -134,7 +150,6 @@ fetch(`${window.ENDPOINT_URL}`)
         mostrarGrupo: mostrarRaw
       };
     });
-console.log("Usando hoja:", window.URL_CONSIGNAS);
 
     const visibles = procesados.filter(e => {
       if (!e.mostrar) return false;
@@ -146,127 +161,9 @@ console.log("Usando hoja:", window.URL_CONSIGNAS);
     events = [...cumpleaños, ...feriados, ...visibles];
     datosListos.eventos = true;
     intentarGenerarCalendario();
+  })
+  .catch(() => {
+    console.warn("❌ Falló cargar eventos");
+    datosListos.eventos = true;
+    intentarGenerarCalendario();
   });
-
-function generateCalendar(year, month) {
-  const calendar = document.getElementById('calendar');
-  calendar.innerHTML = '';
-
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const startDay = (firstDay.getDay() + 6) % 7;
-  const totalDays = lastDay.getDate();
-
-  const header = document.getElementById('month-header');
-  const consignaDiv = document.getElementById('consigna-mensual');
-  const mesActual = document.getElementById('mes-actual');
-  if (mesActual) {
-    mesActual.innerHTML = `
-      <div class="header-logo-titulo">
-        <img src="assets/rotary-logo.png" alt="Rotary Logo" class="rotary-logo" />
-        <span>${firstDay.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }).toUpperCase()}</span>
-      </div>`;
-  }
-  const consigna = consignas.find(c => c.anio === year && c.mes === (month + 1));
-  consignaDiv.textContent = consigna ? consigna.texto : '';
-
-  if (window.innerWidth > 600) {
-    for (let i = 0; i < startDay; i++) {
-      const empty = document.createElement('div');
-      empty.classList.add('day', 'vacio');
-      calendar.appendChild(empty);
-    }
-  }
-
-  for (let day = 1; day <= totalDays; day++) {
-    const dateObj = new Date(year, month, day);
-    const cellDate = dateObj.toISOString().split('T')[0];
-    const dayCell = document.createElement('div');
-    dayCell.classList.add('day');
-
-    const hoyLocal = new Date();
-    const hoyStr = hoyLocal.getFullYear() + '-' +
-                   String(hoyLocal.getMonth() + 1).padStart(2, '0') + '-' +
-                   String(hoyLocal.getDate()).padStart(2, '0');
-    if (hoyStr === cellDate) dayCell.classList.add('hoy');
-
-    const dateLabel = document.createElement('div');
-    dateLabel.classList.add('date');
-    const weekDay = dateObj.toLocaleDateString('es-AR', { weekday: 'short' }).toUpperCase();
-    dateLabel.innerHTML = `<span class='week-day'>${weekDay}</span> <span class='day-number'>${day}</span>`;
-    dayCell.appendChild(dateLabel);
-
-    const dayEvents = events.filter(e => {
-      if (e.error) return false;
-      const eventDate = new Date(e.date + 'T00:00:00Z');
-      const hasta = e.hasta instanceof Date && !isNaN(e.hasta) ? e.hasta : null;
-
-      if (e.repeat === 'semanal') {
-        return eventDate.getUTCDay() === dateObj.getUTCDay() && dateObj >= eventDate && (!hasta || dateObj <= hasta);
-      }
-      if (e.repeat === 'anual') {
-        return eventDate.getUTCDate() === dateObj.getUTCDate() && eventDate.getUTCMonth() === dateObj.getUTCMonth() && (!hasta || dateObj <= hasta);
-      }
-      return e.date === cellDate;
-    });
-
-    dayEvents.sort((a, b) => {
-      const ordenTipo = {
-        'cumpleaños': 0,
-        'efeméride': 1,
-        'feriado': 2,
-        'evento': 3,
-        'otro': 4
-      };
-      const prioridadA = ordenTipo[a.type] ?? 99;
-      const prioridadB = ordenTipo[b.type] ?? 99;
-      if (prioridadA !== prioridadB) return prioridadA - prioridadB;
-      const tieneHoraA = a.time && a.time.trim() !== '';
-      const tieneHoraB = b.time && b.time.trim() !== '';
-      if (tieneHoraA !== tieneHoraB) return tieneHoraA ? 1 : -1;
-      if (tieneHoraA && tieneHoraB) return a.time.localeCompare(b.time);
-      return 0;
-    });
-
-    dayEvents.forEach(event => {
-      const eventEl = document.createElement('div');
-      eventEl.classList.add('event');
-      const tipo = event.type;
-      const estilo = emojis[tipo] || { emoji: '', color: '#e2e3e5' };
-      const emoji = estilo.emoji;
-      const color = estilo.color;
-
-      let texto = `${emoji} `;
-      if (tipo === 'cumpleaños' && event.mostrarEdad && typeof event.añoNacimiento === 'number') {
-        const edad = year - event.añoNacimiento;
-        texto += `${event.title} (${edad} años)`;
-      } else {
-        texto += `${event.time ? event.time + ' ' : ''}${event.title}`;
-      }
-      eventEl.textContent = texto;
-      eventEl.style.backgroundColor = color;
-      eventEl.title = estilo.explicacion || event.title;
-      dayCell.appendChild(eventEl);
-    });
-
-    calendar.appendChild(dayCell);
-  }
-
-  setTimeout(() => {
-    const hoy = document.querySelector('.hoy');
-    if (hoy && window.innerWidth <= 600) {
-      hoy.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, 100);
-}
-
-function cambiarMes(delta) {
-  currentDate.setMonth(currentDate.getMonth() + delta);
-  generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-}
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(() => console.log("✅ Service Worker registrado"))
-    .catch(err => console.error("❌ Error al registrar el SW", err));
-}
