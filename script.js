@@ -264,3 +264,9 @@ function cambiarMes(delta) {
   currentDate.setMonth(currentDate.getMonth() + delta);
   generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
 }
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("✅ Service Worker registrado"))
+    .catch(err => console.error("❌ Error al registrar el SW", err));
+}
